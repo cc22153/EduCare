@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'InicioResponsavel.dart';
 
 class PosCadastro extends StatelessWidget {
   const PosCadastro({super.key});
@@ -47,7 +48,9 @@ class PosCadastro extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                // 
+                 Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const InicioResponsavel()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
