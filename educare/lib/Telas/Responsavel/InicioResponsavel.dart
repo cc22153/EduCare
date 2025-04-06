@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'Questionario.dart';
 import 'Rotina.dart';
 import 'Contatos.dart';
+import 'ResumoDiario.dart';
 
 class InicioResponsavel extends StatefulWidget {
   const InicioResponsavel({super.key});
@@ -63,12 +64,49 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         title: const Text('Início'),
         backgroundColor: Colors.lightBlue[300],
       ),
+        drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.lightBlue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Editar Dados'),
+              onTap: () {
+                // Aqui você pode colocar a navegação pra tela de editar dados
+                Navigator.pop(context); // Fecha o menu
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Sair'),
+              onTap: () {
+                Navigator.pop(context); // Fecha o menu
+                Navigator.pop(context); // Sai da tela atual
+              },
+            ),
+          ],
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(90),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center, // Centraliza os botões
           children: [
-            botaoPadrao('RESUMO DIÁRIO', () {}),
+            botaoPadrao('RESUMO DIÁRIO', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ResumoDiario()),
+              );
+            }),
 
             const SizedBox(height: 20),
             botaoPadrao('ROTINA', () {
@@ -94,7 +132,6 @@ class InicioResponsavelState extends State<InicioResponsavel> {
     );
   }
 
-  // Função para criar botão padrão
   Widget botaoPadrao(String texto, VoidCallback onPressed) {
     return SizedBox(
       width: double.infinity, // Preenche toda a largura disponível
