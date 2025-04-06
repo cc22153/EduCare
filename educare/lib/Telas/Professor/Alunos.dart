@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'DetalhesAluno.dart'; 
 
 class Alunos extends StatefulWidget {
   const Alunos({super.key});
@@ -24,14 +25,14 @@ class _AlunosState extends State<Alunos> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); 
+                Navigator.pop(context);
               },
               child: const Text('CANCELAR'),
             ),
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  listaAlunos.removeAt(index); // Remover
+                  listaAlunos.removeAt(index);
                 });
                 Navigator.pop(context);
               },
@@ -51,36 +52,40 @@ class _AlunosState extends State<Alunos> {
         title: const Text('Alunos'),
         backgroundColor: Colors.lightBlue[300],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: listaAlunos.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(listaAlunos[index]['nome']!),
-                subtitle: Text('Turma: ${listaAlunos[index]['turma']}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    removerAluno(index);
-                  },
-                ),
+      body: ListView.builder(
+        itemCount: listaAlunos.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              title: Text(listaAlunos[index]['nome']!),
+              subtitle: Text(listaAlunos[index]['turma']!),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  removerAluno(index);
+                },
               ),
-            );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlue,
-        child: const Icon(Icons.add),
-        onPressed: () {
-         
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tela de adicionar aluno ainda não implementada')),
+              onTap: () {
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                 builder: (context) => DetalhesAluno(
+                 nomeAluno: listaAlunos[index]['nome']!,
+                 turmaAluno: listaAlunos[index]['turma']!,
+               ),
+               ),
+               );
+              },
+            ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.lightBlue[300],
+        onPressed: () {
+          // lógica de adicionar aluno
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
