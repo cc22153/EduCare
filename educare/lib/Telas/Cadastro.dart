@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Responsavel/PosCadastro.dart';
+import 'Professor/InicioProfessor.dart';
 
 class Cadastro extends StatefulWidget {
 
@@ -71,14 +72,21 @@ class CadastroState extends State<Cadastro> {
                     ),
                   );
                 } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PosCadastro()),
-                  );
+                  if (tipoUsuario == "Educador") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const InicioProfessor()),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const PosCadastro()),
+                    );
+                  }
                 }
               },
               child: const Text('CADASTRAR'),
-             ),
+            ),
           ],
         ),
       ),

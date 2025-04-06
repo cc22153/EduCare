@@ -102,17 +102,17 @@ class InicioResponsavelState extends State<InicioResponsavel> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(90),
+        body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, 
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             botaoPadrao('RESUMO DIÁRIO', () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ResumoDiario()),
               );
             }),
-
             const SizedBox(height: 20),
             botaoPadrao('ROTINA', () {
               Navigator.push(
@@ -120,15 +120,13 @@ class InicioResponsavelState extends State<InicioResponsavel> {
                 MaterialPageRoute(builder: (context) => const Rotina()),
               );
             }),
-
             const SizedBox(height: 20),
             botaoPadrao('NOTIFICAÇÕES', () {
-               Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Notificacoes()),
               );
             }),
-
             const SizedBox(height: 20),
             botaoPadrao('CONTATOS', () {
               Navigator.push(
