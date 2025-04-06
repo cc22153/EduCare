@@ -3,6 +3,8 @@ import 'Questionario.dart';
 import 'Rotina.dart';
 import 'Contatos.dart';
 import 'ResumoDiario.dart';
+import 'Notificacoes.dart';
+import '/Telas/login.dart';
 
 class InicioResponsavel extends StatefulWidget {
   const InicioResponsavel({super.key});
@@ -64,7 +66,9 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         title: const Text('Início'),
         backgroundColor: Colors.lightBlue[300],
       ),
+
         drawer: Drawer(
+
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -81,7 +85,6 @@ class InicioResponsavelState extends State<InicioResponsavel> {
               leading: const Icon(Icons.edit),
               title: const Text('Editar Dados'),
               onTap: () {
-                // Aqui você pode colocar a navegação pra tela de editar dados
                 Navigator.pop(context); // Fecha o menu
               },
             ),
@@ -90,7 +93,10 @@ class InicioResponsavelState extends State<InicioResponsavel> {
               title: const Text('Sair'),
               onTap: () {
                 Navigator.pop(context); // Fecha o menu
-                Navigator.pop(context); // Sai da tela atual
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Login()),
+              ); // Sai da conta e vai para tela de login
               },
             ),
           ],
@@ -99,8 +105,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
       body: Padding(
         padding: const EdgeInsets.all(90),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Centraliza os botões
-          children: [
+          mainAxisAlignment: MainAxisAlignment.center, 
             botaoPadrao('RESUMO DIÁRIO', () {
               Navigator.push(
                 context,
@@ -117,7 +122,12 @@ class InicioResponsavelState extends State<InicioResponsavel> {
             }),
 
             const SizedBox(height: 20),
-            botaoPadrao('NOTIFICAÇÕES', () {}),
+            botaoPadrao('NOTIFICAÇÕES', () {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Notificacoes()),
+              );
+            }),
 
             const SizedBox(height: 20),
             botaoPadrao('CONTATOS', () {
@@ -134,8 +144,8 @@ class InicioResponsavelState extends State<InicioResponsavel> {
 
   Widget botaoPadrao(String texto, VoidCallback onPressed) {
     return SizedBox(
-      width: double.infinity, // Preenche toda a largura disponível
-      height: 60, // Altura do botão
+      width: double.infinity, 
+      height: 60, 
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

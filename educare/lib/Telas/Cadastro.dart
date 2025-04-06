@@ -59,32 +59,26 @@ class CadastroState extends State<Cadastro> {
                  },
                 child: const Text('RESPONSÁVEL'),
                 ),
-                  ElevatedButton(
+              ],
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
               onPressed: () {
-
-                if (tipoUsuario == "Responsavel") {
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const PosCadastro(),
-                    ),
-                  );
-                }
-                 else {
-
+                if (tipoUsuario.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Apenas o Responsável vai para o Pós Cadastro!'),
+                      content: Text('Por favor, selecione se você é Educador ou Responsável.'),
                     ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const PosCadastro()),
                   );
                 }
               },
-              child: const Text('CRIAR CONTA'),
-            ),
-          ],
-            ),
+              child: const Text('CADASTRAR'),
+             ),
           ],
         ),
       ),
