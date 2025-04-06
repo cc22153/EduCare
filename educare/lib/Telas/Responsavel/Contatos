@@ -1,0 +1,58 @@
+import 'package:flutter/material.dart';
+import 'InicioResponsavel.dart';
+
+class Contatos extends StatelessWidget {
+  const Contatos({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+
+      backgroundColor: Colors.lightBlue[100],
+      appBar: AppBar( title: const Text('Contatos'),  backgroundColor: Colors.lightBlue[300],
+      ),
+
+      body: Padding(padding: const EdgeInsets.all(20),
+
+        child: Column(
+          
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            const Text(
+              'Professor Responsável:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 15),
+
+            const Text(
+              'Nome: João da Silva',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 10),
+
+            const Text(
+              'Telefone: (11) 99999-9999',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.blue, 
+                decoration: TextDecoration.underline,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            const Text(
+              'Email: joao.silva@email.com',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.blue, 
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

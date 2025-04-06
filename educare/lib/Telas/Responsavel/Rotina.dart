@@ -1,77 +1,112 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'InicioResponsavel.dart';
 
-class Rotina extends StatelessWidget {
+class Rotina extends StatefulWidget {
   const Rotina({super.key});
 
   @override
+  State<Rotina> createState() => RotinaState();
+}
+
+class RotinaState extends State<Rotina> {
+
+   List<Map<String, TextEditingController>> campos = [];
+
+   @override
+  void initState() {
+    super.initState();
+    adicionarCampo(); // cria o primeiro campo automático
+  }
+
+  void adicionarCampo() {
+    setState(() {
+      campos.add({
+        'horario': TextEditingController(),
+        'tarefa': TextEditingController(),
+      });
+    });
+  }
+
+  void removerCampo(int index) {
+    setState(() {
+      campos.removeAt(index);
+    });
+  }
+
+  void concluirRotina() {
+    // depois precisa implementar para os dados serem salvos
+    Navigator.pop(context); // Volta pra tela inicial
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: Colors.lightBlue[100],
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlue[200],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-          Navigator.push(
-             context,
-             MaterialPageRoute(builder: (context) => const InicioResponsavel(),), // Volta para Tela Inicial
-              );
-            },
-        ),
-        title: const Text(
-          'ROTINA',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
+
+      appBar: AppBar( title: const Text('Rotina'), backgroundColor: Colors.blue,),
+
       body: Padding(
-        padding: const EdgeInsets.all(20),
+
+        padding: const EdgeInsets.all(16.0),
+
         child: Column(
+
           children: [
-            const Text(
-              'Escreva a rotina de acordo com os horários do seu filho(a)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
+
             Expanded(
+
               child: ListView.builder(
-                itemCount: 6, // Quantidade de horários
+
+                itemCount: campos.length,
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'Horário ${index + 1}',
-                        border: OutlineInputBorder(),
+                  return Row(
+
+                    children: [
+
+                      Expanded(
+                        
+                        child: TextField(
+
+                          controller: campos[index]['horario'],
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Horário',
+                          ),
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(width: 10),
+                      Expanded(
+
+                        child: TextField(
+                          controller: campos[index]['tarefa'],
+                          decoration: const InputDecoration(
+                            labelText: 'Tarefa',
+                          ),
+                        ),
+                      ),
+
+                      IconButton( icon: const Icon(Icons.delete), onPressed: () => removerCampo(index),),
+                    ],
                   );
                 },
               ),
             ),
+
+            const SizedBox(height: 10),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[800],
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              onPressed: () {
-                Navigator.push(
-             context,
-             MaterialPageRoute(builder: (context) => const InicioResponsavel(),),
-              );
-              },
+              onPressed: adicionarCampo,
+              child: const Text('Adicionar +'),
+            ),
+
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: concluirRotina,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               child: const Text('CONCLUIR'),
             ),
+
           ],
         ),
       ),

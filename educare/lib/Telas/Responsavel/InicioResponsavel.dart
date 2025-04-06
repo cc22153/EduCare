@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Questionario.dart';
 import 'Rotina.dart';
+import 'Contatos.dart';
 
 class InicioResponsavel extends StatefulWidget {
   const InicioResponsavel({super.key});
@@ -63,20 +64,52 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         backgroundColor: Colors.lightBlue[300],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(90),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // Centraliza os botões
           children: [
-            ElevatedButton(onPressed: () {}, child: const Text('RESUMO DIÁRIO')),
+            botaoPadrao('RESUMO DIÁRIO', () {}),
 
-            ElevatedButton(onPressed: () // vai para tela Rotina
-            { 
-              Navigator.push( context,
-              MaterialPageRoute(builder: (context) => const Rotina(),), );}, child: const Text('ROTINA')),
-          
-            ElevatedButton(onPressed: () {}, child: const Text('NOTIFICAÇÕES')),
-          
-            ElevatedButton(onPressed: () {}, child: const Text('CONTATO COM O PROFESSOR')),
+            const SizedBox(height: 20),
+            botaoPadrao('ROTINA', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Rotina()),
+              );
+            }),
+
+            const SizedBox(height: 20),
+            botaoPadrao('NOTIFICAÇÕES', () {}),
+
+            const SizedBox(height: 20),
+            botaoPadrao('CONTATO COM O PROFESSOR', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Contatos()),
+              );
+            }),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Função para criar botão padrão
+  Widget botaoPadrao(String texto, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity, // Preenche toda a largura disponível
+      height: 60, // Altura do botão
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue[300],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          texto,
+          style: const TextStyle(fontSize: 20),
         ),
       ),
     );
