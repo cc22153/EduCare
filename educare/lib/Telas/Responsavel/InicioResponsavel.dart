@@ -82,7 +82,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
             botaoPadrao('NOTIFICAÇÕES', () {}),
 
             const SizedBox(height: 20),
-            botaoPadrao('CONTATO COM O PROFESSOR', () {
+            botaoPadrao('CONTATOS', () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Contatos()),
