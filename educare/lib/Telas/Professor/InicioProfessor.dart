@@ -39,63 +39,73 @@ class InicioProfessorState extends State<InicioProfessor> {
               leading: const Icon(Icons.edit),
               title: const Text('Editar Dados'),
               onTap: () {
-                Navigator.pop(context); 
+                Navigator.pop(context);
+                // Aqui pode colocar navegação pra tela de edição se criar futuramente
               },
             ),
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
               onTap: () {
-                Navigator.pop(context); 
                 Navigator.pushReplacementNamed(context, '/login');
               },
             ),
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+     body: Padding(
+  padding: const EdgeInsets.all(20),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+
+      const SizedBox(height: 50),
             botaoPadrao('ALUNOS', () {
-               Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Alunos()),
-                    );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Alunos()),
+              );
             }),
-         
-            const SizedBox(height: 20),
+  
+     const SizedBox(height: 50),
             botaoPadrao('NOTIFICAÇÕES', () {
-               Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
-                    );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
+              );
             }),
-            const SizedBox(height: 20),
+
+      const SizedBox(height: 50),
             botaoPadrao('CONTATOS', () {
               Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ContatosProfessor()),
-                    );
+                context,
+                MaterialPageRoute(builder: (context) => const ContatosProfessor()),
+              );
             }),
-          ],
+      ],
+     ),
+    )
+    );
+  } 
+
+  Widget botaoPadrao(String texto, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity, 
+      height: 60, 
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue[300],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          texto,
+          style: const TextStyle(fontSize: 20),
         ),
       ),
     );
   }
-
-  Widget botaoPadrao(String texto, VoidCallback onPressed) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.lightBlue[300],
-        padding: const EdgeInsets.symmetric(vertical: 20),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        texto,
-        style: const TextStyle(fontSize: 18, color: Colors.white),
-      ),
-    );
-  }
 }
+

@@ -44,8 +44,6 @@ class PosCadastro extends StatelessWidget {
 
             const TextField(decoration: InputDecoration(labelText: 'Turma'), ),
 
-              const TextField(decoration: InputDecoration(labelText: 'Email do Professor(a)'), ),
-
             const SizedBox(height: 50),
 
             ElevatedButton(

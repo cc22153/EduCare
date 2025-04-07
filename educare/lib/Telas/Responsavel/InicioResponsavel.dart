@@ -92,11 +92,11 @@ class InicioResponsavelState extends State<InicioResponsavel> {
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
               onTap: () {
-                Navigator.pop(context); // Fecha o menu
+                Navigator.pop(context); 
                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Login()),
-              ); // Sai da conta e vai para tela de login
+              ); 
               },
             ),
           ],

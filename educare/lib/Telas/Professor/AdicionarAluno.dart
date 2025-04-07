@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Alunos.dart';
 
 class AdicionarAluno extends StatefulWidget {
   const AdicionarAluno({super.key});
@@ -8,6 +9,7 @@ class AdicionarAluno extends StatefulWidget {
 }
 
 class AdicionarAlunoState extends State<AdicionarAluno> {
+  
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController turmaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -35,6 +37,14 @@ class AdicionarAlunoState extends State<AdicionarAluno> {
             TextField(
               controller: turmaController,
               decoration: const InputDecoration(
+                labelText: 'Usuário:',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: turmaController,
+              decoration: const InputDecoration(
                 labelText: 'Turma:',
                 border: OutlineInputBorder(),
               ),
@@ -50,7 +60,7 @@ class AdicionarAlunoState extends State<AdicionarAluno> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Aqui você pode salvar o aluno
+                  Navigator.pushReplacementNamed(context, '/Alunos');
               },
               child: const Text('ADICIONAR'),
             ),
