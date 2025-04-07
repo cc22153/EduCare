@@ -33,7 +33,6 @@ class ContatosProfessor extends StatelessWidget {
       ),
       child: Row(
         children: const [
-          CircleAvatar(),
           SizedBox(width: 10),
           Expanded(
             child: Text(

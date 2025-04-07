@@ -78,7 +78,6 @@ class InicioProfessorState extends State<InicioProfessor> {
                       context,
                       MaterialPageRoute(builder: (context) => const ContatosProfessor()),
                     );
-              Navigator.pop(context); 
             }),
           ],
         ),

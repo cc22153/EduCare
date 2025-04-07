@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Adicionaraluno extends StatefulWidget {
-  const Adicionaraluno({super.key});
+class AdicionarAluno extends StatefulWidget {
+  const AdicionarAluno({super.key});
 
   @override
-  State<Adicionaraluno> createState() => AdicionarAlunoState();
+  State<AdicionarAluno> createState() => AdicionarAlunoState();
 }
 
-class AdicionarAlunoState extends State<Adicionaraluno> {
+class AdicionarAlunoState extends State<AdicionarAluno> {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController turmaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
