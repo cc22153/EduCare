@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'TelaAtividades.dart';
+import 'AtividadesProfessor.dart';
 
 class DetalhesAluno extends StatefulWidget {
   final String nomeAluno;
@@ -16,7 +16,6 @@ class DetalhesAluno extends StatefulWidget {
 }
 
 class _DetalhesAlunoState extends State<DetalhesAluno> {
-  final TextEditingController observacoesController = TextEditingController();
   final TextEditingController relatorioController = TextEditingController();
 
   @override
@@ -41,19 +40,28 @@ class _DetalhesAlunoState extends State<DetalhesAluno> {
             Text('Série: ${widget.turmaAluno}',
                 style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
+
             const Text('Observações:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            TextField(
-              controller: observacoesController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Escreva as observações...',
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Nenhuma observação disponível.',
+                style: TextStyle(fontSize: 16),
               ),
             ),
             const SizedBox(height: 20),
+
             const Text('Relatório do dia/Semana:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
             TextField(
               controller: relatorioController,
               maxLines: 5,
@@ -63,30 +71,31 @@ class _DetalhesAlunoState extends State<DetalhesAluno> {
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlue[300]),
-                  onPressed: () {
-                    Navigator.pop(context); // Apenas volta
-                  },
-                  child: const Text('CONCLUIR'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlue[300]),
-                  onPressed: () {
-                  ///  Navigator.push(
-              //        context,
-              //        MaterialPageRoute(
-                 //         builder: (context) => const TelaAtividades()),
-               //     );
-                  },
-                  child: const Text('ATIVIDADES'),
-                ),
-              ],
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlue[300],
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AtividadesProfessor()),
+                    );
+              },
+              child: const Text('ATIVIDADES'),
+            ),
+            const SizedBox(height: 10),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlue[300],
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () {
+                Navigator.pop(context); 
+              },
+              child: const Text('CONCLUIR'),
             ),
           ],
         ),

@@ -8,10 +8,11 @@ class Notificacoes extends StatefulWidget {
 }
 
 class _NotificacoesState extends State<Notificacoes> {
-  List<bool> lido = [false, false]; // Controle dos cards
+  List<bool> lido = [false, false]; 
   bool estaBem = true;
-  bool mostrarHumor = true; // Controle da exibição do humor
-  bool mostrarAtividade = true; // Controle da exibição da atividade
+  bool mostrarHumor = true; 
+  bool mostrarAtividade = true;
+  bool mostrarRelatorio = true; 
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,7 @@ class _NotificacoesState extends State<Notificacoes> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             if (mostrarHumor) ...[
               const Text(
                 'Como seu filho(a) está se sentindo:',
@@ -58,6 +60,7 @@ class _NotificacoesState extends State<Notificacoes> {
               ),
               const SizedBox(height: 20),
             ],
+
             if (mostrarAtividade) ...[
               const Text(
                 'Atividades a serem realizadas:',
@@ -72,6 +75,29 @@ class _NotificacoesState extends State<Notificacoes> {
                     onPressed: () {
                       setState(() {
                         mostrarAtividade = false;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            if (mostrarRelatorio) ...[
+              const Text(
+                'Relatório da Professora:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Card(
+                child: ListTile(
+                  title: const Text(
+                      'Hoje o aluno participou muito bem das atividades e se comportou de forma exemplar.'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () {
+                      setState(() {
+                        mostrarRelatorio = false;
                       });
                     },
                   ),

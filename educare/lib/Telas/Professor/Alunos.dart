@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'DetalhesAluno.dart'; 
+import 'AdicionarAluno.dart'; 
 
 class Alunos extends StatefulWidget {
   const Alunos({super.key});
@@ -82,8 +83,12 @@ class _AlunosState extends State<Alunos> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightBlue[300],
-        onPressed: () {
-          // lógica de adicionar aluno
+        onPressed: () {Navigator.push(
+                context,
+                MaterialPageRoute(
+                 builder: (context) => AdicionarAluno(),
+               ),
+               );
         },
         child: const Icon(Icons.add),
       ),

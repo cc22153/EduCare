@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '/Telas/Cadastro.dart';
 import '/Telas/Login.dart';
 import 'Alunos.dart';
+import 'AtividadesProfessor.dart';
+import 'NotificacoesProfessor.dart';
+import 'ContatosProfessor.dart';
 
 class InicioProfessor extends StatefulWidget {
   const InicioProfessor({super.key});
@@ -61,16 +64,20 @@ class InicioProfessorState extends State<InicioProfessor> {
                       MaterialPageRoute(builder: (context) => const Alunos()),
                     );
             }),
-            const SizedBox(height: 20),
-            botaoPadrao('SUGESTÕES DE ATIVIDADES', () {
-              Navigator.pop(context); 
-            }),
+         
             const SizedBox(height: 20),
             botaoPadrao('NOTIFICAÇÕES', () {
-              Navigator.pop(context); 
+               Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
+                    );
             }),
             const SizedBox(height: 20),
             botaoPadrao('CONTATOS', () {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ContatosProfessor()),
+                    );
               Navigator.pop(context); 
             }),
           ],
