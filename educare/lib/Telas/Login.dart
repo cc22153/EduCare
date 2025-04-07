@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Cadastro.dart';
-
+import 'Aluno/InicioAluno.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -34,7 +34,14 @@ class Login extends StatelessWidget {
               SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                   context,
+                   MaterialPageRoute(
+                    builder: (context) => const InicioAluno(),
+                  ),
+               );
+                },
                 child: Text('ENTRAR'),
               ),
 

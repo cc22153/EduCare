@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
-import '/Telas/Cadastro.dart';
 import '/Telas/Login.dart';
-import 'Alunos.dart';
-import 'AtividadesProfessor.dart';
-import 'NotificacoesProfessor.dart';
-import 'ContatosProfessor.dart';
-import 'EditarDadosProfessor.dart';
+import 'DiarioAluno.dart';
+import 'EstadoEmocional.dart';
+import 'AtividadesAluno.dart';
+import 'ContatosAluno.dart';
 
-class InicioProfessor extends StatefulWidget {
-  const InicioProfessor({super.key});
+class InicioAluno extends StatefulWidget {
+  const InicioAluno({super.key});
 
   @override
-  State<InicioProfessor> createState() => InicioProfessorState();
+  State<InicioAluno> createState() => InicioAlunoState();
 }
 
-class InicioProfessorState extends State<InicioProfessor> {
+class InicioAlunoState extends State<InicioAluno> {
+  @override
+  void initState() {
+    super.initState();
+  
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +27,9 @@ class InicioProfessorState extends State<InicioProfessor> {
         title: const Text('Início'),
         backgroundColor: Colors.lightBlue[300],
       ),
-      drawer: Drawer(
+
+        drawer: Drawer(
+
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -36,63 +42,58 @@ class InicioProfessorState extends State<InicioProfessor> {
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Editar Dados'),
-              onTap: () {
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EditarDadosProfessor() ),
-              );
-              },
-            ),
+          
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
               onTap: () {
+                Navigator.pop(context); 
                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Login()),
-              );
+              ); 
               },
             ),
           ],
         ),
       ),
-     body: Padding(
-  padding: const EdgeInsets.all(20),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-
-      const SizedBox(height: 50),
-            botaoPadrao('ALUNOS', () {
+        body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            botaoPadrao('DIÁRIO', () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Alunos()),
+                MaterialPageRoute(builder: (context) => DiarioAluno()),
               );
             }),
-  
-     const SizedBox(height: 50),
-            botaoPadrao('NOTIFICAÇÕES', () {
+            const SizedBox(height: 50),
+            botaoPadrao('ESTADO EMOCIONAL', () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
+               MaterialPageRoute(builder: (context) => const EstadoEmocional()),
               );
             }),
-
-      const SizedBox(height: 50),
+            const SizedBox(height: 50),
+            botaoPadrao('ATIVIDADES', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AtividadesAluno()),
+              );
+            }),
+            const SizedBox(height: 50),
             botaoPadrao('CONTATOS', () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ContatosProfessor()),
+                MaterialPageRoute(builder: (context) => const ContatosAluno()),
               );
             }),
-      ],
-     ),
-    )
+          ],
+        ),
+      ),
     );
-  } 
+  }
 
   Widget botaoPadrao(String texto, VoidCallback onPressed) {
     return SizedBox(
@@ -114,4 +115,3 @@ class InicioProfessorState extends State<InicioProfessor> {
     );
   }
 }
-

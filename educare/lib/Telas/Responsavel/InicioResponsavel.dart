@@ -5,6 +5,7 @@ import 'Contatos.dart';
 import 'ResumoDiario.dart';
 import 'Notificacoes.dart';
 import '/Telas/login.dart';
+import 'EditarDadosResponsavel.dart';
 
 class InicioResponsavel extends StatefulWidget {
   const InicioResponsavel({super.key});
@@ -85,7 +86,10 @@ class InicioResponsavelState extends State<InicioResponsavel> {
               leading: const Icon(Icons.edit),
               title: const Text('Editar Dados'),
               onTap: () {
-                Navigator.pop(context); // Fecha o menu
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditarDadosResponsavel()),
+              ); 
               },
             ),
             ListTile(
