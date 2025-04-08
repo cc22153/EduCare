@@ -127,7 +127,6 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
 
               ElevatedButton(
                 onPressed: () {
-                  // Aqui você pode salvar os dados ou fazer o que precisar
                   Navigator.pop(context);
                 },
                 child: const Text('ENVIAR'),

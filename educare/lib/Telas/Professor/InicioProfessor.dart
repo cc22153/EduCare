@@ -46,16 +46,52 @@ class InicioProfessorState extends State<InicioProfessor> {
               );
               },
             ),
-            ListTile(
+                        ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
               onTap: () {
+                Navigator.pop(context); 
                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Login()),
-              );
+              ); 
               },
             ),
+              ListTile(
+        leading: const Icon(Icons.delete_forever),
+        title: const Text('Excluir Conta'),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Excluir Conta'),
+                content: const Text(
+                    'Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); 
+                    },
+                    child: const Text('Cancelar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                     
+                      Navigator.pop(context); 
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Login()),
+                      );
+                    },
+                   child: const Text('Excluir'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
           ],
         ),
       ),

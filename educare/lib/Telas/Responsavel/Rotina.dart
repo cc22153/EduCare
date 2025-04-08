@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/services.dart';
-
 
 class Rotina extends StatefulWidget {
   const Rotina({super.key});
@@ -16,7 +14,7 @@ class RotinaState extends State<Rotina> {
    @override
   void initState() {
     super.initState();
-    adicionarCampo(); // cria o primeiro campo automático
+    adicionarCampo(); 
   }
 
   void adicionarCampo() {
@@ -35,16 +33,16 @@ class RotinaState extends State<Rotina> {
   }
 
   void concluirRotina() {
-    // depois precisa implementar para os dados serem salvos
-    Navigator.pop(context); // Volta pra tela inicial
+    // depois preciso implementar para os dados serem salvos
+    Navigator.pop(context); 
   }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-
-      appBar: AppBar( title: const Text('Rotina'), backgroundColor: Colors.blue,),
+      backgroundColor: Colors.lightBlue[100],
+      appBar: AppBar( title: const Text('Rotina'), backgroundColor: Colors.lightBlue[300],),
 
       body: Padding(
 

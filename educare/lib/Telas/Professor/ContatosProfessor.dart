@@ -16,7 +16,6 @@ class ContatosProfessor extends StatelessWidget {
         child: Column(
           children: [
             contatoCard(),
-            contatoCard(),
           ],
         ),
       ),

@@ -10,7 +10,7 @@ class Cadastro extends StatefulWidget {
 }
 
 class CadastroState extends State<Cadastro> {
-  String tipoUsuario = ""; // Variável criada para armazenar o tipo do usuário
+  String tipoUsuario = ""; // Variável para armazenar o tipo do usuário
 
   @override
   Widget build(BuildContext context) {
