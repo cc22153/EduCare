@@ -21,10 +21,13 @@ class InicioAlunoState extends State<InicioAluno> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       backgroundColor: Colors.lightBlue[100],
-      appBar: AppBar(
-        title: const Text('Início'),
+
+      appBar: AppBar(  title: Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
+
         backgroundColor: Colors.lightBlue[300],
       ),
 

@@ -34,6 +34,7 @@ class PosCadastro extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
+
             const TextField(decoration: InputDecoration(labelText: 'Nome do filho(a)'), ),
 
             const TextField(decoration: InputDecoration(labelText: 'Usuário'), ),
@@ -53,7 +54,9 @@ class PosCadastro extends StatelessWidget {
       MaterialPageRoute(builder: (context) => const InicioResponsavel()));
               },
               style: ElevatedButton.styleFrom(
+
                 backgroundColor: Colors.blueAccent,
+                
                 padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               child: const Text(

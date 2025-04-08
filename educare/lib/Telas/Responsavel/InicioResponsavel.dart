@@ -15,6 +15,7 @@ class InicioResponsavel extends StatefulWidget {
 }
 
 class InicioResponsavelState extends State<InicioResponsavel> {
+
   @override
   void initState() {
     super.initState();
@@ -61,11 +62,14 @@ class InicioResponsavelState extends State<InicioResponsavel> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       backgroundColor: Colors.lightBlue[100],
-      appBar: AppBar(
-        title: const Text('Início'),
-        backgroundColor: Colors.lightBlue[300],
+
+      appBar: AppBar( title: Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
+      backgroundColor: Colors.lightBlue[300],
+
       ),
 
         drawer: Drawer(
@@ -73,7 +77,9 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
+
             const DrawerHeader(
+              
               decoration: BoxDecoration(
                 color: Colors.lightBlue,
               ),
@@ -82,6 +88,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
+
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text('Editar Dados'),
@@ -147,27 +154,28 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            botaoPadrao('RESUMO DIÁRIO', () {
+              const SizedBox(height: 30),
+              botaoPadrao('RESUMO DIÁRIO', () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ResumoDiario()),
               );
             }),
-            const SizedBox(height: 20),
-            botaoPadrao('ROTINA', () {
+            const SizedBox(height: 50),
+              botaoPadrao('ROTINA', () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Rotina()),
               );
             }),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             botaoPadrao('NOTIFICAÇÕES', () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Notificacoes()),
               );
             }),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             botaoPadrao('CONTATOS', () {
               Navigator.push(
                 context,
@@ -181,20 +189,25 @@ class InicioResponsavelState extends State<InicioResponsavel> {
   }
 
   Widget botaoPadrao(String texto, VoidCallback onPressed) {
+    
     return SizedBox(
+
       width: double.infinity, 
       height: 60, 
-      child: ElevatedButton(
-        onPressed: onPressed,
+      
+      child: ElevatedButton(  onPressed: onPressed,
+ 
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue[300],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
+
           ),
         ),
         child: Text(
           texto,
           style: const TextStyle(fontSize: 20),
+          textAlign: TextAlign.center,
         ),
       ),
     );

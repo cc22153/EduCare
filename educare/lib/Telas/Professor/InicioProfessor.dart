@@ -17,14 +17,18 @@ class InicioProfessor extends StatefulWidget {
 class InicioProfessorState extends State<InicioProfessor> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       backgroundColor: Colors.lightBlue[100],
-      appBar: AppBar(
-        title: const Text('Início'),
+
+      appBar: AppBar(  title: Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
         backgroundColor: Colors.lightBlue[300],
       ),
       drawer: Drawer(
+
         child: ListView(
+
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(

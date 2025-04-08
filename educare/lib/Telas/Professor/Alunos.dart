@@ -55,13 +55,21 @@ class _AlunosState extends State<Alunos> {
         backgroundColor: Colors.lightBlue[300],
       ),
       body: ListView.builder(
+
         itemCount: listaAlunos.length,
+
         itemBuilder: (context, index) {
+
           return Card(
+              
             child: ListTile(
+
               title: Text(listaAlunos[index]['nome']!),
+
               subtitle: Text(listaAlunos[index]['turma']!),
+
               trailing: IconButton(
+
                 icon: const Icon(Icons.delete),
                 onPressed: () {
                   removerAluno(index);
@@ -82,6 +90,7 @@ class _AlunosState extends State<Alunos> {
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightBlue[300],
         onPressed: () {Navigator.push(

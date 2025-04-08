@@ -8,6 +8,7 @@ class AtividadesProfessor extends StatefulWidget {
 }
 
 class _AtividadesProfessorState extends State<AtividadesProfessor> {
+
   List<String> atividades = [
     'Ler um livro por 20 minutos',
     'Resolver exercícios de matemática',
@@ -27,17 +28,24 @@ class _AtividadesProfessorState extends State<AtividadesProfessor> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.lightBlue[100],
+
+    return Scaffold( backgroundColor: Colors.lightBlue[100],
+
       appBar: AppBar(
+
         backgroundColor: Colors.lightBlue[300],
         title: const Text('Atividades do Professor'),
       ),
+
       body: Padding(
+
         padding: const EdgeInsets.all(16),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
+
             const Text(
               'Lista de Atividades:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -48,11 +56,8 @@ class _AtividadesProfessorState extends State<AtividadesProfessor> {
               child: ListView.builder(
                 itemCount: atividades.length,
                 itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(atividades[index]),
-                    ),
-                  );
+
+                  return Card( child: ListTile(  title: Text(atividades[index]), ), );
                 },
               ),
             ),
@@ -67,22 +72,20 @@ class _AtividadesProfessorState extends State<AtividadesProfessor> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 80),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue[300],
-                  ),
+                  style: ElevatedButton.styleFrom( backgroundColor: Colors.lightBlue[300],),
                   onPressed: adicionarAtividade,
-                  child: const Text('ADICIONAR'),
+                  child: const Text('ADICIONAR ATIVIDADE'),
                 ),
+              
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue[300],
-                  ),
+                  style: ElevatedButton.styleFrom( backgroundColor: Colors.lightBlue[300],),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -90,6 +93,7 @@ class _AtividadesProfessorState extends State<AtividadesProfessor> {
                 ),
               ],
             ),
+            const SizedBox(height: 50),
           ],
         ),
       ),
