@@ -1,3 +1,4 @@
+import 'package:educare/Telas/Responsavel/Rotina.dart';
 import 'package:flutter/material.dart';
 import 'Cadastro.dart';
 import 'Aluno/InicioAluno.dart';
@@ -20,19 +21,16 @@ class Login extends StatelessWidget {
           child: Column(
 
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('images/logo.png', height: 100),
-              SizedBox(height: 20),
-
-              TextField(
+              Image.asset('lib/images/logo.png', height: 500),
+              const TextField(
                 decoration: InputDecoration(labelText: 'Usuário'),
               ),
-              TextField(
+              const TextField(
                 decoration: InputDecoration(labelText: 'Senha'),
                 obscureText: true,
               ),
-              SizedBox(height: 20),
-
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(

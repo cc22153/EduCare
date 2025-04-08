@@ -13,26 +13,26 @@ class Contatos extends StatelessWidget {
       appBar: AppBar( title: const Text('Contatos'),  backgroundColor: Colors.lightBlue[300],
       ),
 
-      body: Padding(padding: const EdgeInsets.all(20),
+      body: const Padding(padding: EdgeInsets.all(20),
 
         child: Column(
           
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text(
+            Text(
               'Professor Responsável:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 15),
 
-            const Text(
+            Text(
               'Nome: João da Silva',
               style: TextStyle(fontSize: 18),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
-            const Text(
+            Text(
               'Telefone: (11) 99999-9999',
               style: TextStyle(
                 fontSize: 18,
@@ -40,9 +40,9 @@ class Contatos extends StatelessWidget {
                 decoration: TextDecoration.underline,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
-            const Text(
+            Text(
               'Email: joao.silva@email.com',
               style: TextStyle(
                 fontSize: 18,
