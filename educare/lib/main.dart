@@ -6,16 +6,15 @@ void main() {
 }
 
 class MainApp extends StatelessWidget {
-  
   const MainApp({super.key});
 
   @override
- Widget build(BuildContext context) {
-
-    return const MaterialApp(
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EduCare',
-      home: Login(),
+      home: const Login(),
+      theme: ThemeData(fontFamily: 'Poppins'),
     );
   }
 }
