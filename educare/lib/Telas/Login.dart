@@ -1,4 +1,3 @@
-import 'package:educare/Telas/Responsavel/Rotina.dart';
 import 'package:flutter/material.dart';
 import 'Cadastro.dart';
 import 'Aluno/InicioAluno.dart';
@@ -18,7 +17,7 @@ class Login extends StatelessWidget {
 
         child: Padding(
 
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
 
           child: Column(
 
@@ -27,29 +26,56 @@ class Login extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
-              const SizedBox(height: 40),
               Image.asset('lib/images/logo.png', height: 300),
-
               const TextField(
-                decoration: InputDecoration(labelText: 'Usuário'),
+                decoration: InputDecoration(
+                  labelText: 'Usuário', 
+                  labelStyle: TextStyle(
+                    color: Colors.white
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1)
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2)
+                  )
+                ),
               ),
               const SizedBox(height: 20),
               const TextField(
-                decoration: InputDecoration(labelText: 'Senha'),
+                decoration: InputDecoration(
+                  labelText: 'Senha',
+                  labelStyle: TextStyle(
+                    color: Colors.white
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1)
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2)
+                  )
+                ),
                 obscureText: true,
               ),
 
-               const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
-              ElevatedButton( onPressed: () {  Navigator.push(  context, MaterialPageRoute(
-               builder: (context) => const InicioAluno(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton( 
+                  onPressed: () {  
+                    Navigator.push(  
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => const InicioAluno(),
+                      ),
+                    );
+                  },
+                  child: const Text('ENTRAR')
                 ),
-               );
-              },
-                child: Text('ENTRAR'),
               ),
 
-               const SizedBox(height: 20),
+              const SizedBox(height: 5),
 
               TextButton(
                 onPressed: () { Navigator.push( context, MaterialPageRoute(

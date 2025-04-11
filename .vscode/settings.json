@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/Jotta/Documents/GitHub/EduCare/educare/linux"
+    "cmake.sourceDirectory": "C:/Users/Jotta/Documents/GitHub/EduCare/educare/linux",
+    "dart.flutterSdkPath": "/opt/flutter"
 }
