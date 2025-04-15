@@ -42,7 +42,6 @@ class InicioAlunoState extends State<InicioAluno> {
       appBar: AppBar(
         title: const Text('Início'),
         backgroundColor: Colors.lightBlue[300],
-        iconTheme: IconThemeData(),
       ),
       backgroundColor: Colors.lightBlue[100],
       body: SingleChildScrollView(

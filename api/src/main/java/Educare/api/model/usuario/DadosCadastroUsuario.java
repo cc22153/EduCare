@@ -1,26 +1,24 @@
 package Educare.api.model.usuario;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
-import Educare.api.model.Professor;
-import Educare.api.repository.ProfessorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+public record DadosCadastroUsuario(
+        @NotBlank
+        String nome,
 
-import java.util.List;
+        @NotBlank
+        @Email
+        String email,
 
-@RestController
-@RequestMapping("/api/professores")
-class ProfessorController {
-    @Autowired
-    private ProfessorRepository repository;
+        @NotBlank
+        String senha,
 
-    @GetMapping
-    public List<Professor> listar() {
-        return repository.findAll();
-    }
+        @NotNull
+        TipoUsuario tipoUsuario,
 
-    @PostMapping
-    public Professor criar(@RequestBody Professor p) {
-        return repository.save(p);
-    }
-}
+        @NotBlank
+        String dataNascimento,
 
+        @NotBlank
+        String genero
+) {}

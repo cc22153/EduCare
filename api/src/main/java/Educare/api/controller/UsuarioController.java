@@ -1,7 +1,9 @@
 package Educare.api.controller;
 
+import Educare.api.model.usuario.DadosCadastroUsuario;
 import Educare.api.model.usuario.Usuario;
 import Educare.api.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,9 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping
-    public Usuario criarUsuario(@RequestBody Usuario usuario) {
+    public Usuario criarUsuario(@RequestBody @Valid DadosCadastroUsuario dados) {
+        Usuario usuario = new Usuario(dados);
+
         return usuarioRepository.save(usuario);
     }
 

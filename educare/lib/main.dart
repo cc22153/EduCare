@@ -28,7 +28,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins', // 👈 Define a fonte global
       ),
-      home: const InicioAluno(),
+      home: const Login(),
     );
   }
 }
