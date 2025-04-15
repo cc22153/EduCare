@@ -16,7 +16,7 @@ class Login extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('lib/images/logo.png', height: 300),
+              Image.asset('assets/images/logo.png', height: 300),
               const TextField(
                 decoration: InputDecoration(
                   labelText: 'Usuário',
