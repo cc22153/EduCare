@@ -1,4 +1,7 @@
-package Educare.api.model.usuario;
+package Educare.api.model;
+
+import Educare.api.model.usuario.Usuario;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Professores")

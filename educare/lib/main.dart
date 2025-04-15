@@ -1,3 +1,4 @@
+import 'package:educare/Telas/Aluno/InicioAluno.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // 👈 Importa localização
 import 'Telas/Login.dart';
@@ -27,7 +28,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins', // 👈 Define a fonte global
       ),
-      home: const Login(),
+      home: const InicioAluno(),
     );
   }
 }

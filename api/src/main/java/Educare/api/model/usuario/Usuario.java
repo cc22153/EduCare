@@ -1,4 +1,4 @@
-package Educare.api.model;
+package Educare.api.model.usuario;
 
 import java.time.LocalDate;
 

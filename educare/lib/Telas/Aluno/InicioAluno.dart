@@ -34,10 +34,16 @@ class InicioAlunoState extends State<InicioAluno> {
 
   @override
   Widget build(BuildContext context) {
-    final eventosSelecionados =
-        _getEventosDoDia(_selectedDay ?? _focusedDay);
+    final eventosSelecionados = _getEventosDoDia(_selectedDay ?? _focusedDay);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = (screenWidth - 45) / 2;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Início'),
+        backgroundColor: Colors.lightBlue[300],
+        iconTheme: IconThemeData(),
+      ),
       backgroundColor: Colors.lightBlue[100],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15),
@@ -105,15 +111,14 @@ class InicioAlunoState extends State<InicioAluno> {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 200,
-                  height: 200,
+                  width: buttonWidth,
+                  height: buttonWidth,
                   child: ElevatedButton(
-                    onPressed: (){
-
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[300],
                       shape: RoundedRectangleBorder(
@@ -128,41 +133,38 @@ class InicioAlunoState extends State<InicioAluno> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              DateFormat.EEEE('pt_BR').format(DateTime.now()).toUpperCase(),
+                              DateFormat.EEEE('pt_BR')
+                                  .format(DateTime.now())
+                                  .toUpperCase(),
                               style: const TextStyle(
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 221, 63, 52),
-                                fontWeight: FontWeight.bold
-                              ),
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 221, 63, 52),
+                                  fontWeight: FontWeight.bold),
                             ),
                             Text(
                               DateTime.now().day.toString(),
                               style: const TextStyle(
-                                fontSize: 32,
-                                color: Colors.white
-                              ),
+                                  fontSize: 32, color: Colors.white),
                             )
                           ],
                         ),
                         const Text(
                           "Sem eventos hoje",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white54
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.white54),
                         )
                       ],
                     ),
                   ),
                 ),
                 SizedBox(
-                  width: 200,
-                  height: 200,
+                  width: buttonWidth,
+                  height: buttonWidth,
                   child: ElevatedButton(
-                    onPressed: (){
+                    onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const EstadoEmocional()),
+                        MaterialPageRoute(
+                            builder: (context) => const EstadoEmocional()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -182,10 +184,7 @@ class InicioAlunoState extends State<InicioAluno> {
                         ),
                         const Text(
                           "Como você esta se sentindo ?",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         )
                       ],
                     ),
@@ -195,16 +194,17 @@ class InicioAlunoState extends State<InicioAluno> {
             ),
             const SizedBox(height: 15),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 200,
-                  height: 200,
+                  width: buttonWidth,
+                  height: buttonWidth,
                   child: ElevatedButton(
-                    onPressed: (){
+                    onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const EstadoEmocional()),
+                        MaterialPageRoute(
+                            builder: (context) => const EstadoEmocional()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -224,21 +224,46 @@ class InicioAlunoState extends State<InicioAluno> {
                         ),
                         const Text(
                           "DIÁRIO",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white
-                          ),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         )
                       ],
                     ),
                   ),
                 ),
-                botaoPadrao('CONTATOS', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ContatosAluno()),
-                  );
-                }, Icons.phone),
+                SizedBox(
+                  width: buttonWidth,
+                  height: buttonWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AtividadesAluno()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[300],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/atividades.webp',
+                          width: 150,
+                          height: 150,
+                        ),
+                        const Text(
+                          "ATIVIDADES",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ],

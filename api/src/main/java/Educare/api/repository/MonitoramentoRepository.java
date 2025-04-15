@@ -1,4 +1,4 @@
-package Educare.api.controller;
+package Educare.api.repository;
 
 public class MonitoramentoRepository {
 }
