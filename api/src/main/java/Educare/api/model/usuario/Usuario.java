@@ -1,5 +1,7 @@
 package Educare.api.model.usuario;
 
+import Educare.api.model.usuario.TipoUsuario;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
