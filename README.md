@@ -9,3 +9,11 @@ O projeto **EDUCARE** utiliza **Inteligência Artificial** para prever crises co
 - Prever possíveis **crises de autismo** em adolescentes com base em sinais prévios.
 - Integrar dados de **pais, educadores e alunos** para análise comportamental.
 - Utilizar uma **pulseira inteligente** para coletar dados como **frequência cardíaca** e **nível de agitação**.
+
+👥 Autores
+
+👨 João Pedro cassiano de Brito
+👩 Virgínia da Silva
+👩 Yasmin Tavares Noberto
+
+Equipe do Projeto EDUCARE: Colégio Técnico de Campinas - Unicamp
