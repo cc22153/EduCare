@@ -12,8 +12,8 @@ O projeto **EDUCARE** utiliza **Inteligência Artificial** para prever crises co
 
 👥 Autores
 
-👨 João Pedro cassiano de Brito
-👩 Virgínia da Silva
-👩 Yasmin Tavares Noberto
+👨 João Pedro Cassiano de Brito  
+👩 Virgínia da Silva  
+👩 Yasmin Tavares Noberto  
 
 Equipe do Projeto EDUCARE: Colégio Técnico de Campinas - Unicamp
