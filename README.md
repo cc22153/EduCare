@@ -1,6 +1,6 @@
 # 🤖 EDUCARE - IA para Apoio à Inclusão de Adolescentes Autistas
 
-O projeto **EDUCARE** utiliza **Inteligência Artificial** para prever crises comportamentais em adolescentes autistas com base em dados fisiológicos e comportamentais coletados por uma **pulseira inteligente** e **diários escolares**. O objetivo é **promover inclusão do ensino** no ambiente escolar.
+O projeto **EDUCARE** utiliza **Inteligência Artificial** para prever crises comportamentais em adolescentes autistas com base em dados fisiológicos e comportamentais coletados por uma **pulseira inteligente** e **diários escolares**. O objetivo é **promover inclusão** no ambiente escolar.
 
 ---
 
