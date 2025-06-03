@@ -1,15 +1,7 @@
 import random
 
 def generate_simulated_data(scenario_type: str = "normal") -> dict:
-    """
-    Gera um dicionário de dados simulados de questionários e sensores,
-    com base em um tipo de cenário (normal, crise, misto)
 
-    scenario_type: Tipo de cenário para simular ('normal', 'crise', 'misto')
-
-    Retorna:
-        dict: Um dicionário de dados simulados.
-    """
     data = {}
 
     #  Simulação de Dados de Sensores 
@@ -61,8 +53,8 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     data["lidou_mudanca_rotina"] = random.choice(["Muito bem", "Bem", "Com alguma dificuldade", "Com grande dificuldade"])
     data["adaptacao_necessaria"] = random.choice(["Sim", "Não"])
 
-    # Variável alvo (target variable) para treinamento 
-    # Lógica simples para determinar se é uma "crise" baseada nos dados simulados.
+
+    # Lógica simples para determinar se é uma crise 
   
     data["is_crisis"] = 0 # Assume normal como padrão
 

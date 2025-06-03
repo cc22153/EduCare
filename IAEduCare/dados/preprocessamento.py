@@ -1,13 +1,6 @@
 import numpy as np
 
-def preprocess_data(data_input: dict) -> list:
-    """
-    Args:
-        data_input (dict): Dicionário contendo dados dos questionários e sensores.
-
-    Returns:
-        list: Um vetor numérico das características.
-    """
+def preprocessaDados(data_input: dict) -> list:
 
     #  variáveis categóricas - 
     SEX_MAP = {"Masculino": 0, "Feminino": 1, "Prefere não informar": 2}
@@ -29,7 +22,7 @@ def preprocess_data(data_input: dict) -> list:
 
     # Educador - Perguntas Diárias
     EDUCATOR_MOOD_MAP = {"Feliz": 0, "Neutro": 1, "Triste": 2, "Irritado": 3}
-    PARTICIPATION_MAP = {"Sim": 1, "👎 Não": 0, "Parcialmente": 0.5} 
+    PARTICIPATION_MAP = {"Sim": 1, "Não": 0, "Parcialmente": 0.5} 
     INTERACTION_MAP = {"Excelente": 3, "Boa": 2, "Regular": 1, "Difícil": 0}
     CRISIS_OCCURRED_MAP = {"Sim": 1, "Não": 0}
     COMMUNICATION_EDU_MAP = {"Com facilidade": 0, "Com alguma dificuldade": 1, "Não verbalizou": 2}
@@ -40,16 +33,11 @@ def preprocess_data(data_input: dict) -> list:
     ROUTINE_CHANGE_MAP = {"Muito bem": 3, "Bem": 2, "Com alguma dificuldade": 1, "Com grande dificuldade": 0}
     ADAPTATION_NEEDED_MAP = {"Sim": 1, "Não": 0}
 
-    # Definição do vetor de características a ordem importa
-    # Cada posição no vetor corresponde a uma característica específica
+    # Cada posição no vetor é uma característica específica
 
     feature_vector = []
 
-    # já são as CARACTERÍSTICAS extraídas (e.g., média, desvio padrão)
-    # Para série de dados (listas), precisa de uma função
-    # para extrair essas características antes de chamar preprocess_data
-
-    feature_vector.append(data_input.get("frequencia_cardiaca_media", 0)) # Média da FC em um período
+    feature_vector.append(data_input.get("frequencia_cardiaca_media", 0)) # Média da Frequencia em um período
     feature_vector.append(data_input.get("nivel_agitacao_media", 0.0))    # Média da agitação em um período
 
     # Questionário do Responsável
@@ -62,7 +50,7 @@ def preprocess_data(data_input: dict) -> list:
 
     feature_vector.append(ROUTINE_MAP.get(data_input.get("rotina_estruturada", "Parcialmente"), 1))
 
-    # Sensibilidades Sensoriais (Multi-seleção: One-Hot Encoding)
+    # Sensibilidades Sensoriais 
     SENSITIVITIES_LIST = ["Sons altos", "Luzes fortes", "Certas texturas", "Cheiros fortes"]
     current_sensitivities = data_input.get("sensibilidades", [])
     for s in SENSITIVITIES_LIST:
@@ -83,20 +71,20 @@ def preprocess_data(data_input: dict) -> list:
 
     feature_vector.append(DID_WHAT_WANTED_MAP.get(data_input.get("fez_o_que_queria", "Sim"), 1))
 
-    # --- Questionário do Aluno - Estado Emocional ---
+    #  Questionário do Aluno - Estado Emocional 
     feature_vector.append(EMOTIONAL_STATE_MAP.get(data_input.get("estado_emocional_aluno", "Bem"), 4))
     feature_vector.append(PHYSICAL_PAIN_MAP.get(data_input.get("dor_fisica", "Não"), 0))
-    feature_vector.append(WANT_TO_BE_ALONE_MAP.get(data_input.get("quer_ficar_sozinho", "👎 Não"), 0))
+    feature_vector.append(WANT_TO_BE_ALONE_MAP.get(data_input.get("quer_ficar_sozinho", "Não"), 0))
     feature_vector.append(NEED_HELP_MAP.get(data_input.get("precisa_ajuda", "Não"), 0))
 
-    # --- Questionário do Educador - Perguntas Diárias ---
+    # Questionário do Educador - Perguntas Diárias 
     feature_vector.append(EDUCATOR_MOOD_MAP.get(data_input.get("humor_aluno_edu", "Neutro"), 1))
-    feature_vector.append(PARTICIPATION_MAP.get(data_input.get("participacao_atividades", "👍 Sim"), 1))
+    feature_vector.append(PARTICIPATION_MAP.get(data_input.get("participacao_atividades", "Sim"), 1))
     feature_vector.append(INTERACTION_MAP.get(data_input.get("interacao_colegas", "Boa"), 2))
     feature_vector.append(CRISIS_OCCURRED_MAP.get(data_input.get("crise_ocorrida_edu", "Não"), 0)) # Sufixo para educador
     feature_vector.append(COMMUNICATION_EDU_MAP.get(data_input.get("comunicacao_verbal_edu", "Com facilidade"), 0))
 
-    # --- Questionário do Educador - Perguntas Semanais ---
+    #  Questionário do Educador - Perguntas Semanais 
     feature_vector.append(WEEKLY_BEHAVIOR_MAP.get(data_input.get("avaliacao_semanal_edu", "Bom"), 2))
 
     # Evoluções 
