@@ -26,5 +26,5 @@ def probabilidadeCrise(processed_data: list, model) -> float:
 
     data_np = np.array([processed_data])
     #retorna as probabilidades para todas as classes.
-    probabilities = model.probabilidadeCrise(data_np)
+    probabilities = model.predict_proba(data_np)
     return float(probabilities[0][1]) # Pega a probabilidade da classe 1 (crise)
