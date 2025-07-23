@@ -8,10 +8,8 @@ import numpy as np
 from dados.preprocessamento import preprocessaDados
 from dados.simulador import generate_simulated_data
 
-def train_and_save_model(model_filename: str = "model.pkl"):
-    """
-    Gera dados simulados, pré-processa, treina um modelo de classificação e salva o modelo treinado.
-    """
+def treinaModeloESalva(model_filename: str = "model.pkl"):
+ 
     print("Iniciando o treinamento do modelo")
 
     # Gerar um conjunto de dados simulados
@@ -84,4 +82,4 @@ def train_and_save_model(model_filename: str = "model.pkl"):
     print(f"\nModelo salvo com sucesso como '{model_filename}'")
 
 if __name__ == "__main__":
-    train_and_save_model()
+    treinaModeloESalva()
