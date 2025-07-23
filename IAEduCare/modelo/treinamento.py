@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import numpy as np
 
 # Importa as funções de dados
-from dados.preprocessamento import preprocess_data
+from dados.preprocessamento import preprocessaDados
 from dados.simulador import generate_simulated_data
 
 def train_and_save_model(model_filename: str = "model.pkl"):
@@ -39,7 +39,7 @@ def train_and_save_model(model_filename: str = "model.pkl"):
 
     # 2. Pré-processar os dados brutos para o formato numérico
     print("Pré-processando os dados...")
-    X_processed_features = [preprocess_data(data) for data in X_raw_data]
+    X_processed_features = [preprocessaDados(data) for data in X_raw_data]
 
     # Converta para arrays NumPy para usar com Scikit-learn
     X = np.array(X_processed_features)
