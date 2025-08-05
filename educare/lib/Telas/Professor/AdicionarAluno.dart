@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'Alunos.dart';
 
 class AdicionarAluno extends StatefulWidget {
   const AdicionarAluno({super.key});

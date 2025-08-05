@@ -30,8 +30,8 @@ class ContatosProfessor extends StatelessWidget {
         color: Colors.lightBlue[200],
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Row(
-        children: const [
+      child: const Row(
+        children: [
           SizedBox(width: 10),
           Expanded(
             child: Text(

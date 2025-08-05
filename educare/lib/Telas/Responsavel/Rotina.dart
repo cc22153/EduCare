@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'InicioResponsavel.dart';
 
 class Rotina extends StatefulWidget {
   const Rotina({super.key});

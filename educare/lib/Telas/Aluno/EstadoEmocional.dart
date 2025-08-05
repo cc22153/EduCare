@@ -1,17 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EstadoEmocional extends StatefulWidget {
-  const EstadoEmocional({super.key});
+  final String idAluno;
+  const EstadoEmocional({super.key, required this.idAluno});
 
   @override
   State<EstadoEmocional> createState() => _EstadoEmocionalState();
 }
 
 class _EstadoEmocionalState extends State<EstadoEmocional> {
-  
-   String? emocaoSelecionada;
+  String? emocaoSelecionada;
   String? motivoSelecionado;
   final TextEditingController necessidadeController = TextEditingController();
+
+  final supabase = Supabase.instance.client;
+
+  Future<void> enviarEstadoEmocional() async {
+    if (emocaoSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Selecione uma emoção")),
+      );
+      return;
+    }
+
+    try {
+      await supabase.from('estado_emocional').insert({
+        'id_aluno': widget.idAluno,
+        'sentimento': emocaoSelecionada!.toLowerCase(),
+        'motivo': motivoSelecionado,
+        'texto': necessidadeController.text,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Enviado com sucesso!")),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao enviar: $e")),
+      );
+    }
+  }
 
   Widget emocaoButton(String emoji, String titulo) {
     return Column(
@@ -19,13 +49,15 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
         InkWell(
           onTap: () {
             setState(() {
-              emocaoSelecionada = titulo;
+              emocaoSelecionada = titulo.toLowerCase();
             });
           },
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: emocaoSelecionada == titulo ? Colors.blue[200] : Colors.white,
+              color: emocaoSelecionada == titulo.toLowerCase()
+                  ? Colors.blue[200]
+                  : Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -73,7 +105,6 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-
               Wrap(
                 spacing: 20,
                 runSpacing: 20,
@@ -86,16 +117,12 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
                   emocaoButton('😴', 'Cansado'),
                 ],
               ),
-
               const SizedBox(height: 30),
-
               const Text(
                 'O que está te deixando assim?',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 20),
-
               Wrap(
                 spacing: 20,
                 runSpacing: 20,
@@ -105,16 +132,12 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
                   motivoButton('Barulho'),
                 ],
               ),
-
               const SizedBox(height: 30),
-
               const Text(
                 'O que você precisa agora?',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 10),
-
               TextField(
                 controller: necessidadeController,
                 decoration: const InputDecoration(
@@ -122,13 +145,9 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
                   hintText: 'Digite aqui...',
                 ),
               ),
-
               const SizedBox(height: 30),
-
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: enviarEstadoEmocional,
                 child: const Text('ENVIAR'),
               ),
             ],

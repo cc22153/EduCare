@@ -1,4 +1,6 @@
+import 'package:educare/Services/supabase.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Questionario.dart';
 import 'Rotina.dart';
 import 'Contatos.dart';
@@ -15,59 +17,62 @@ class InicioResponsavel extends StatefulWidget {
 }
 
 class InicioResponsavelState extends State<InicioResponsavel> {
+  final supabase = Supabase.instance.client;
+
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      mostrarPopUpQuestionario();
-    });
   }
+  void buscarDiariosDeHoje() async {
+    final supabase = Supabase.instance.client;
+    final userId = supabase.auth.currentUser!.id;
+    // 1. Pegar IDs dos alunos do responsável
+    final responseResponsavelAlunos = await supabase
+        .from('responsavel_aluno')
+        .select('id_aluno')
+        .eq('id_responsavel', userId);
 
-  void mostrarPopUpQuestionario() {
-    showDialog(
+    final List<dynamic> alunos = responseResponsavelAlunos;
+    if (alunos.isEmpty) {
+      print('Nenhum aluno vinculado ao responsável');
+      return;
+    }
 
-      context: context,
+    // Extrair os IDs dos alunos
+    final List<String> alunoIds =
+        alunos.map((e) => e['id_aluno'].toString()).toList();
 
-      builder: (context) {
+    // 2. Buscar entradas do diário de HOJE desses alunos
+    final hoje = DateTime.now();
+    final hojeFormatado = DateTime(hoje.year, hoje.month, hoje.day).toIso8601String();
 
-        return AlertDialog(
+    final responseDiarios = await supabase
+        .from('diario')
+        .select()
+        .inFilter('id_aluno', alunoIds)
+        .gte('criado_em', hojeFormatado) // data >= hoje 00:00
+        .lt('criado_em', hoje.add(const Duration(days: 1)).toIso8601String()); // data < amanhã 00:00
 
-          title: const Text('Questionário'),
-          
-          content: const Text(
-              'Agora responda um questionário rápido sobre seu filho(a) para que o app seja mais personalizado.'),
-          actions: [
-            TextButton(
-            onPressed: () {
-              Navigator.pop(context); 
-            },
-            child: const Text('FECHAR'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); 
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Questionario()),
-              ); // Vai para a tela do questionário
-              },
-              child: const Text('RESPONDER'),
-            ),
-          ],
-        );
-      },
+    final diarios = responseDiarios;
+    print(diarios);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ResumoDiario(diarios: diarios)),
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    
 
     return Scaffold(
 
       backgroundColor: Colors.lightBlue[100],
 
-      appBar: AppBar( title: Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
+      appBar: AppBar( title: const Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
       backgroundColor: Colors.lightBlue[300],
 
       ),
@@ -102,12 +107,8 @@ class InicioResponsavelState extends State<InicioResponsavel> {
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
-              onTap: () {
-                Navigator.pop(context); 
-               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Login()),
-              ); 
+              onTap: () async {
+                await Supabase.instance.client.auth.signOut();
               },
             ),
               ListTile(
@@ -156,10 +157,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
           children: [
               const SizedBox(height: 30),
               botaoPadrao('RESUMO DIÁRIO', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ResumoDiario()),
-              );
+              buscarDiariosDeHoje();
             }),
             const SizedBox(height: 50),
               botaoPadrao('ROTINA', () {

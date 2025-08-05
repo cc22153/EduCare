@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '/Telas/Cadastro.dart';
 import '/Telas/Login.dart';
 import 'Alunos.dart';
-import 'AtividadesProfessor.dart';
 import 'NotificacoesProfessor.dart';
 import 'ContatosProfessor.dart';
 import 'EditarDadosProfessor.dart';
@@ -22,7 +20,7 @@ class InicioProfessorState extends State<InicioProfessor> {
 
       backgroundColor: Colors.lightBlue[100],
 
-      appBar: AppBar(  title: Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
+      appBar: AppBar(  title: const Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
         backgroundColor: Colors.lightBlue[300],
       ),
       drawer: Drawer(

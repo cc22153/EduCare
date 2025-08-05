@@ -29,8 +29,8 @@ class _NotificacoesProfessorState extends State<NotificacoesProfessor> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     CircleAvatar(),
                     SizedBox(width: 10),
                     Expanded(

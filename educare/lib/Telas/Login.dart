@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:educare/Services/supabase.dart';
+import 'package:educare/Telas/Professor/InicioProfessor.dart';
+import 'package:educare/Telas/Responsavel/InicioResponsavel.dart';
 import 'package:flutter/material.dart';
 import 'Cadastro.dart';
 import 'Aluno/InicioAluno.dart';
-import '../services/auth_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -24,36 +28,73 @@ class _LoginState extends State<Login> {
     final email = emailController.text.trim();
     final senha = senhaController.text.trim();
 
-    final response = await AuthService.login(email, senha);
+    final response = await supabase.auth.signInWithPassword(
+      email: email,
+      password: senha,
+    );
+
+    // Buscar o tipo do usuário no Supabase
+    final userId = response.user?.id;
+    Map<String, dynamic> aluno;
+    final usuario = await supabase
+        .from('usuario')
+        .select()
+        .eq('id', userId!)
+        .single();
+
+      if(usuario['tipo_usuario'] == "aluno"){
+        aluno = await supabase
+          .from('aluno')
+          .select()
+          .eq('id', usuario['id']) // ou .eq('id', idUsuario) se for direto
+          .single();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => InicioAluno(usuario: usuario, aluno: aluno)),
+          );
+      }
 
     setState(() {
       isLoading = false;
     });
 
-    if (response != null) {
-      // Login bem-sucedido
-      print('Usuário logado: $response');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const InicioAluno()),
-      );
+    if (usuario['tipo_usuario'] != null) {
+      final tipo = usuario['tipo_usuario'];
+      print(tipo);
+
+      // Redirecionar para a tela correta
+      if (tipo == 'professor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InicioProfessor()), // <- criar depois
+        );
+      } else if (tipo == 'responsavel') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InicioResponsavel()), // <- criar depois
+        );
+      }
     } else {
-      // Erro no login
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Erro de login'),
-          content: const Text('Usuário ou senha inválidos.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      _mostrarErro('Usuário sem tipo definido.');
     }
+    }
+
+  void _mostrarErro(String mensagem) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Erro'),
+        content: Text(mensagem),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
