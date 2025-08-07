@@ -90,12 +90,10 @@ class CadastroState extends State<Cadastro> {
                     firstDate: DateTime(2000),
                     lastDate: DateTime.now(),
                   );
-                  if (picked != null) {
-                    setState(() {
-                      dataNascimento = picked;
-                    });
-                  }
-                },
+                  setState(() {
+                    dataNascimento = picked;
+                  });
+                                },
                 child: AbsorbPointer(
                   child: TextField(
                     decoration: InputDecoration(

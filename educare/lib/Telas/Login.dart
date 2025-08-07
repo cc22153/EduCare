@@ -32,6 +32,10 @@ class _LoginState extends State<Login> {
       email: email,
       password: senha,
     );
+    
+    setState(() {
+      isLoading = false;
+    });
 
     // Buscar o tipo do usuário no Supabase
     final userId = response.user?.id;
@@ -53,10 +57,6 @@ class _LoginState extends State<Login> {
             MaterialPageRoute(builder: (context) => InicioAluno(usuario: usuario, aluno: aluno)),
           );
       }
-
-    setState(() {
-      isLoading = false;
-    });
 
     if (usuario['tipo_usuario'] != null) {
       final tipo = usuario['tipo_usuario'];
