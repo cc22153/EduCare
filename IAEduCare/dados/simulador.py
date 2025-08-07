@@ -7,10 +7,10 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     #  Simulação de Dados de Sensores 
 
     if scenario_type == "crise":
-        data["frequencia_cardiaca_media"] = random.randint(110, 160) # Freq. C elevada
+        data["frequencia_cardiaca_media"] = random.randint(100, 190) # Freq. C elevada
         data["nivel_agitacao_media"] = random.uniform(0.7, 1.0) # Agitação alta
     elif scenario_type == "normal":
-        data["frequencia_cardiaca_media"] = random.randint(70, 100) # Freq. C normal
+        data["frequencia_cardiaca_media"] = random.randint(60, 100) # Freq. C normal
         data["nivel_agitacao_media"] = random.uniform(0.0, 0.3) # Agitação baixa
     else: # Misto ou aleatório
         data["frequencia_cardiaca_media"] = random.randint(60, 140)
@@ -57,12 +57,56 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     # Lógica simples para determinar se é uma crise 
   
     data["is_crisis"] = 0 # Assume normal como padrão
-
+    
+    # Se o cenário foi explicitamente pedido como "crise", garanta que seja uma crise
     if scenario_type == "crise":
+        # Force alguns sinais de crise para garantir o rótulo
+        data["frequencia_cardiaca_media"] = random.randint(130, 170)
+        data["nivel_agitacao_media"] = random.uniform(0.7, 1.0)
+        data["sentimento_hoje"] = random.choice(["Bravo", "Triste"])
+        data["estado_emocional_aluno"] = random.choice(["Bravo", "Medo"])
+        data["crise_ocorrida_edu"] = "Sim"
         data["is_crisis"] = 1
-    elif (data["frequencia_cardiaca_media"] > 120 and data["nivel_agitacao_media"] > 0.6) or \
-         (data["sentimento_hoje"] == "Bravo" and data["estado_emocional_aluno"] == "Bravo") or \
-         (data["crise_ocorrida_edu"] == "Sim"):
+        return data # Retorna aqui para garantir que cenários de crise sejam gerados
+
+    # Lógica de pontuação para cenários "normais" ou "misto" que podem se tornar crise
+    crisis_score = 0
+
+    # Sensores
+    if data["frequencia_cardiaca_media"] > 120: crisis_score += 2
+    if data["nivel_agitacao_media"] > 0.5: crisis_score += 2
+
+    # Aluno
+    if data["sentimento_hoje"] == "Bravo": crisis_score += 2
+    if data["sentimento_hoje"] == "Triste": crisis_score += 1
+    if data["estado_emocional_aluno"] in ["Bravo", "Medo"]: crisis_score += 2
+    if data["dor_fisica"] == "Sim": crisis_score += 1
+    if data["quer_ficar_sozinho"] == "Sim": crisis_score += 1
+    if "Barulho alto" in data["incomodado_aluno"] or "Luz forte" in data["incomodado_aluno"]: crisis_score += 1
+
+    # Educador
+    if data["humor_aluno_edu"] == "Irritado": crisis_score += 2
+    if data["participacao_atividades"] == "Não": crisis_score += 1
+    if data["interacao_colegas"] == "Difícil": crisis_score += 2
+    if data["comunicacao_verbal_edu"] == "Não verbalizou": crisis_score += 2
+    if data["retrocesso_edu"] == "Sim": crisis_score += 3
+    if data["lidou_mudanca_rotina"] == "Com grande dificuldade": crisis_score += 2
+
+
+    # Se já houve uma crise reportada pelo educador, é definitivamente uma crise
+    if data["crise_ocorrida_edu"] == "Sim":
         data["is_crisis"] = 1
+    # Caso contrário, avalia pelo score
+    elif crisis_score >= 5: # Um limiar que você pode ajustar. 5 é um exemplo.
+        data["is_crisis"] = 1
+    
+    # Cenários para garantir que o modelo aprenda o que NÃO É crise também
+    # Exemplo: Se os sensores estão baixos E o humor está bom E não há problemas reportados, forçar 0
+    elif data["frequencia_cardiaca_media"] < 80 and \
+         data["nivel_agitacao_media"] < 0.2 and \
+         data["sentimento_hoje"] == "Feliz" and \
+         data["humor_aluno_edu"] == "Feliz":
+        data["is_crisis"] = 0
+
 
     return data
