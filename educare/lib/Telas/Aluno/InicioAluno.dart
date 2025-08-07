@@ -101,7 +101,7 @@ class InicioAlunoState extends State<InicioAluno> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  alignment: const AlignmentGeometry.directional(-0.8, 0),
+                  alignment: const AlignmentDirectional(-0.8, 0),
                   backgroundColor: Colors.blue[300],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
