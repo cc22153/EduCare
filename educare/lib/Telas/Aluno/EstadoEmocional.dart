@@ -46,28 +46,28 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   Widget emocaoButton(String emoji, String titulo) {
     return Column(
       children: [
-        InkWell(
-          onTap: () {
+        ElevatedButton(
+          onPressed: () {
             setState(() {
               emocaoSelecionada = titulo.toLowerCase();
             });
           },
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: emocaoSelecionada == titulo.toLowerCase()
-                  ? Colors.blue[200]
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              emoji,
-              style: const TextStyle(fontSize: 30),
-            ),
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(5),
+            backgroundColor: emocaoSelecionada == titulo.toLowerCase()
+                ? Colors.lightBlue[300]
+                : Colors.white,
+          ),
+          child: Text(
+            emoji,
+            style: const TextStyle(fontSize: 30),
           ),
         ),
-        const SizedBox(height: 5),
-        Text(titulo),
+        Text(
+          titulo,
+          style: const TextStyle(fontSize: 14),
+        ),
       ],
     );
   }
@@ -75,7 +75,16 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   Widget motivoButton(String motivo) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: motivoSelecionado == motivo ? Colors.blue[300] : Colors.lightBlue,
+        backgroundColor: motivoSelecionado == motivo
+            ? Colors.lightBlue[300]
+            : Colors.white,
+        foregroundColor: motivoSelecionado == motivo
+            ? Colors.white
+            : Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: const BorderSide(color: Colors.lightBlue, width: 1),
+        ),
       ),
       onPressed: () {
         setState(() {
@@ -91,69 +100,101 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
+        foregroundColor: Colors.white,
         backgroundColor: Colors.lightBlue[300],
-        title: const Text('ESTADO EMOCIONAL'),
+        title: const Text(
+          'ESTADO EMOCIONAL',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               const Text(
                 'Como você está se sentindo agora?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 20),
               Wrap(
-                spacing: 20,
-                runSpacing: 20,
+                spacing: 15,
+                runSpacing: 15,
                 children: [
-                  emocaoButton('😊', 'Feliz'),
-                  emocaoButton('😐', 'Neutro'),
-                  emocaoButton('😢', 'Triste'),
-                  emocaoButton('😡', 'Irritado'),
-                  emocaoButton('😰', 'Ansioso'),
-                  emocaoButton('😴', 'Cansado'),
+                  Wrap(
+                    spacing: 15,
+                    children: [
+                      emocaoButton('😊', 'Feliz'),
+                      emocaoButton('😐', 'Neutro'),
+                      emocaoButton('😢', 'Triste'),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 15,
+                    children: [
+                      emocaoButton('😠', 'Irritado'),
+                      emocaoButton('😰', 'Ansioso'),
+                      emocaoButton('😴', 'Cansado'),
+                    ],
+                  ),
                 ],
               ),
-              const SizedBox(height: 30),
               const Text(
                 'O que está te deixando assim?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 20),
               Wrap(
-                spacing: 20,
-                runSpacing: 20,
+                spacing: 15,
+                runSpacing: 15,
                 children: [
                   motivoButton('Aula'),
                   motivoButton('Pessoas'),
                   motivoButton('Barulho'),
                 ],
               ),
-              const SizedBox(height: 30),
               const Text(
                 'O que você precisa agora?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 10),
               TextField(
                 controller: necessidadeController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Digite aqui...',
+                cursorColor: Colors.lightBlue[300],
+                cursorWidth: 2,
+                minLines: 5,
+                maxLines: 20,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromARGB(79, 0, 0, 0), width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.lightBlue[300]!, width: 2),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(500, 25),
+                  backgroundColor: Colors.lightBlue[300],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onPressed: enviarEstadoEmocional,
-                child: const Text('ENVIAR'),
+                child: const Text(
+                  'ENVIAR',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
         ),
-      ),
     );
   }
 }

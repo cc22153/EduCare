@@ -22,54 +22,72 @@ class _DiarioAlunoState extends State<DiarioAluno> {
         backgroundColor: Colors.lightBlue[300],
         title: const Text(
           'DIÁRIO',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const Text(
               'Como você se sentiu hoje?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 20),
             Wrap(
-              spacing: 10,
-              runSpacing: 20,
+              spacing: 15,
+              runSpacing: 15,
               children: [
-                emocaoButton('😊', 'Feliz'),
-                emocaoButton('😐', 'Neutro'),
-                emocaoButton('😢', 'Triste'),
-                emocaoButton('😠', 'Irritado'),
-                emocaoButton('😰', 'Ansioso'),
-                emocaoButton('😴', 'Cansado'),
+                Wrap(
+                  spacing: 15,
+                  children: [
+                    emocaoButton('😊', 'Feliz'),
+                    emocaoButton('😐', 'Neutro'),
+                    emocaoButton('😢', 'Triste'),
+                  ],
+                ),
+                Wrap(
+                  spacing: 15,
+                  children: [
+                    emocaoButton('😠', 'Irritado'),
+                    emocaoButton('😰', 'Ansioso'),
+                    emocaoButton('😴', 'Cansado'),
+                  ],
+                ),
               ],
             ),
-            const SizedBox(height: 20),
             const Text(
               'Conte um pouco de como foi seu dia, você conseguiu prestar atenção na aula hoje? O que achou das atividades que o professor(a) passou?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, wordSpacing: -1),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
             TextField(
               controller: descricaoController,
-              minLines: 15,
+              cursorColor: Colors.lightBlue[300], // cor do cursor
+              cursorWidth: 2,
+              minLines: 5,
               maxLines: 20,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(79, 0, 0, 0), width: 2),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.lightBlue[300]!, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                 ),
               ),
             ),
-            const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                fixedSize: const Size(500, 25),
                 backgroundColor: Colors.lightBlue[300],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () {
                 if (emocaoSelecionada != null &&
@@ -83,7 +101,10 @@ class _DiarioAlunoState extends State<DiarioAluno> {
                   );
                 }
               },
-              child: const Text('ENVIAR'),
+              child: const Text('ENVIAR', style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold
+              ),),
             ),
           ],
         ),
@@ -102,8 +123,8 @@ class _DiarioAlunoState extends State<DiarioAluno> {
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
-            padding: const EdgeInsets.all(15),
-            backgroundColor: emocaoSelecionada == emocao
+            padding: const EdgeInsets.all(5),
+            backgroundColor: emocaoSelecionada == emocao.toLowerCase()
                 ? Colors.lightBlue[300]
                 : Colors.white,
           ),

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:educare/Services/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -65,91 +67,87 @@ class InicioResponsavelState extends State<InicioResponsavel> {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
     return Scaffold(
-
       backgroundColor: Colors.lightBlue[100],
-
-      appBar: AppBar( title: const Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
-      backgroundColor: Colors.lightBlue[300],
-
+      appBar: AppBar( 
+        title: const Align(alignment: Alignment.centerLeft, child: Text('Início')),
+        backgroundColor: Colors.lightBlue[300],
       ),
-
         drawer: Drawer(
-
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-
-            const DrawerHeader(
-              
-              decoration: BoxDecoration(
-                color: Colors.lightBlue,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Editar Dados'),
-              onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EditarDadosResponsavel()),
-              ); 
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Sair'),
-              onTap: () async {
-                await Supabase.instance.client.auth.signOut();
-              },
-            ),
-              ListTile(
-        leading: const Icon(Icons.delete_forever),
-        title: const Text('Excluir Conta'),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Excluir Conta'),
-                content: const Text(
-                    'Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancelar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
+          child: ListView(
             
-                      Navigator.pop(context); 
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Login()),
+            children: [
+              const DrawerHeader(
+                margin: EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue,
+                ),
+                padding: EdgeInsets.only(top: 110, right: 15),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                  textAlign: TextAlign.right
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Editar Dados'),
+                onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditarDadosResponsavel()),
+                ); 
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.exit_to_app),
+                title: const Text('Sair'),
+                onTap: () async {
+                  await Supabase.instance.client.auth.signOut();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Login()),
+                    (Route<dynamic> route) => false, // remove todas as rotas anteriores
+                  );
+                },
+              ),
+              /*ListTile(
+                leading: const Icon(Icons.delete_forever),
+                title: const Text('Excluir Conta'),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Excluir Conta'),
+                        content: const Text(
+                          'Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.'
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancelar'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); 
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const Login()),
+                                );
+                              },            
+                              child: const Text('Excluir'),
+                            ),
+                          ],
                       );
                     },
-                                    
-                    child: const Text('Excluir'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
-          ],
+                  );
+                },
+              ),*/
+            ],
+          ),
         ),
-      ),
         body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

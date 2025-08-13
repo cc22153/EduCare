@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '/Telas/Login.dart';
 import 'Alunos.dart';
 import 'NotificacoesProfessor.dart';
@@ -51,12 +52,12 @@ class InicioProfessorState extends State<InicioProfessor> {
                         ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Sair'),
-              onTap: () {
-                Navigator.pop(context); 
-               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Login()),
-              ); 
+              onTap: () async {
+                await Supabase.instance.client.auth.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Login()),
+                  (Route<dynamic> route) => false, // remove todas as rotas anteriores
+                );
               },
             ),
               ListTile(

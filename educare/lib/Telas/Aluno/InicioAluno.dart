@@ -1,3 +1,4 @@
+import 'package:educare/Telas/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,7 +23,7 @@ class InicioAlunoState extends State<InicioAluno> {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.fromLTRB(15, 60, 15, 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -39,7 +40,7 @@ class InicioAlunoState extends State<InicioAluno> {
                   Text(
                     "Seja Bem-Vindo, \n${widget.usuario['nome']}!",
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 18,
                       color: Color(0xFF009ADA),
                     ),
                   ),
@@ -50,7 +51,7 @@ class InicioAlunoState extends State<InicioAluno> {
                     onPressed: (){
                     
                     }, 
-                    iconSize: 75,
+                    iconSize: 60,
                     icon: Icon(
                       Icons.account_circle,
                       color: Colors.blue[300],
@@ -199,12 +200,12 @@ class InicioAlunoState extends State<InicioAluno> {
                       children: [
                         Image.asset(
                           'assets/images/emoji.png',
-                          width: 120,
-                          height: 120,
+                          width: 110,
+                          height: 110,
                         ),
                         const Text(
                           "Como você esta se sentindo ?",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(fontSize: 16, color: Colors.white, wordSpacing: -2),
                         )
                       ],
                     ),
@@ -217,6 +218,10 @@ class InicioAlunoState extends State<InicioAluno> {
             ElevatedButton(
               onPressed: () async {
                 await Supabase.instance.client.auth.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Login()),
+                  (Route<dynamic> route) => false, // remove todas as rotas anteriores
+                );
                 print('Usuário deslogado!');
               },
               child: Text('Deslogar'),
