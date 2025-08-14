@@ -1,3 +1,4 @@
+import 'package:educare/Telas/Aluno/RotinaAluno.dart';
 import 'package:educare/Telas/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -44,20 +45,46 @@ class InicioAlunoState extends State<InicioAluno> {
                       color: Color(0xFF009ADA),
                     ),
                   ),
-                  IconButton(
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    padding: const EdgeInsets.all(0),
-                    onPressed: (){
-                    
-                    }, 
-                    iconSize: 60,
+                  PopupMenuButton<String>(
                     icon: Icon(
                       Icons.account_circle,
                       color: Colors.blue[300],
-                    )
+                      size: 55,
+                    ),
+                    onSelected: (value) {
+                      if (value == 'editar') {
+                        Navigator.pushNamed(context, '/editarPerfil');
+                      } else if (value == 'sair') {
+                        Supabase.instance.client.auth.signOut();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => const Login()),
+                          (Route<dynamic> route) => false,
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'editar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text('Editar Perfil'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'sair',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Sair'),
+                          ],
+                        ),
+                      ),
+                    ],
                   )
-                  
                 ],
               ),
             ),
@@ -100,7 +127,13 @@ class InicioAlunoState extends State<InicioAluno> {
               width: buttonWidth * 2.5,
               height: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RotinaAluno()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   alignment: const AlignmentDirectional(-0.8, 0),
                   backgroundColor: Colors.blue[300],
@@ -215,17 +248,6 @@ class InicioAlunoState extends State<InicioAluno> {
 
               ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await Supabase.instance.client.auth.signOut();
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Login()),
-                  (Route<dynamic> route) => false, // remove todas as rotas anteriores
-                );
-                print('Usuário deslogado!');
-              },
-              child: Text('Deslogar'),
-            )
           ],
         ),
       ),

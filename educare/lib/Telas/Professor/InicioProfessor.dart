@@ -1,3 +1,5 @@
+import 'package:educare/Telas/Professor/AdminTurmas.dart';
+import 'package:educare/Telas/Professor/TurmaDetalhe.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '/Telas/Login.dart';
@@ -60,41 +62,7 @@ class InicioProfessorState extends State<InicioProfessor> {
                 );
               },
             ),
-              ListTile(
-        leading: const Icon(Icons.delete_forever),
-        title: const Text('Excluir Conta'),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Excluir Conta'),
-                content: const Text(
-                    'Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); 
-                    },
-                    child: const Text('Cancelar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                     
-                      Navigator.pop(context); 
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Login()),
-                      );
-                    },
-                   child: const Text('Excluir'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
+            
           ],
         ),
       ),
@@ -125,6 +93,15 @@ class InicioProfessorState extends State<InicioProfessor> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ContatosProfessor()),
+              );
+            }),
+
+      const SizedBox(height: 50),
+            botaoPadrao('TURMAS', () {
+              final id = Supabase.instance.client.auth.currentUser?.id;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AdminTurmas(idProfessor: id!)),
               );
             }),
       ],
