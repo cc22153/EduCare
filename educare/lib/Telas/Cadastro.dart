@@ -2,6 +2,7 @@
 import 'package:educare/Telas/Aluno/InicioAluno.dart';
 import 'package:educare/Telas/Responsavel/InicioResponsavel.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Professor/InicioProfessor.dart';
 import 'package:intl/intl.dart';
@@ -17,11 +18,18 @@ class CadastroState extends State<Cadastro> {
   List<String> list = <String>['Professor', 'Responsável', 'Aluno'];
   String nome = "", senha = "", email = "";
   String dropdownValue = "Professor";
+  final telefoneFormatter = MaskTextInputFormatter(
+    mask: '+55 (##) #####-####',
+    filter: { "#": RegExp(r'[0-9]') },
+    type: MaskAutoCompletionType.lazy,
+  );
+
 
   // Campos extras para aluno
   String nomeResponsavel = "";
   String emailResponsavel = "";
   String codigoTurma = "";
+  String telefone = "";
   DateTime? dataNascimento;
   String? sexoSelecionado;
   String? nivelTEA;
@@ -48,6 +56,12 @@ class CadastroState extends State<Cadastro> {
             TextField(
               decoration: const InputDecoration(labelText: 'Email'),
               onChanged: (value) => email = value,
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Telefone'),
+              keyboardType: TextInputType.phone,
+              inputFormatters: [telefoneFormatter],
+              onChanged: (value) => telefone = value,
             ),
             TextField(
               decoration: const InputDecoration(labelText: 'Senha'),
@@ -135,6 +149,7 @@ class CadastroState extends State<Cadastro> {
                   sexo: sexoSelecionado,
                   nivel_tea: nivelTEA,
                   id_turma: codigoTurma,
+                  telefone: telefone,
                   context: context,
                 );
 
@@ -157,6 +172,7 @@ class CadastroState extends State<Cadastro> {
     String? sexo,
     String? nivel_tea,
     String? id_turma,
+    String? telefone,
     required BuildContext context,
   }) async {
     final supabase = Supabase.instance.client;
@@ -212,6 +228,15 @@ class CadastroState extends State<Cadastro> {
           .single();
 
       final usuarioId = userAuthenticated['id'];
+
+      if (telefone != null && telefone.isNotEmpty) {
+        await supabase.from('contato').insert({
+          'id_usuario': usuarioId,
+          'telefone': telefone,
+          'nome': nome,
+          'email': email,
+        });
+      }
 
       if (tipoUsuario == 'aluno') {
         try {
