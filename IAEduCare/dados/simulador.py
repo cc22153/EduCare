@@ -4,8 +4,8 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
 
     data = {}
 
-    # Lógica para cenários de treinamento bem definidos (NORMAL e CRISE)
-    # Isso garante que o modelo aprenda com exemplos claros.
+    # Lógica para cenários de treinamento bem definidos 
+    # Isso garante que o modelo aprenda com exemplos claros
     if scenario_type == "normal":
         data["frequencia_cardiaca_media"] = random.randint(60, 90)
         data["nivel_agitacao_media"] = random.uniform(0.0, 0.2)
