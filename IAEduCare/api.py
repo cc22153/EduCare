@@ -94,6 +94,7 @@ async def predict_crisis_endpoint(data: DataInput):
         raise HTTPException(status_code=400, detail=f"Erro no processamento dos dados: {e}")
 
 # uvicorn api:app --reload(para rodar a api) -- cntrl + C
+# http://127.0.0.1:8000/docs rota para testar no insomnia
 
 
 

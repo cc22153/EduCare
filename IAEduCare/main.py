@@ -76,8 +76,26 @@ if __name__ == "__main__":
 
     # Executa a simulação de predição
     run_prediction_simulation(model)
+    
+    print("-" * 50)
+    
+    # Simula dados completamente aleatórios (cenário misto)
+    print("\nSimulando dados de um aluno com cenário MISTO (ALEATÓRIO):")
+    mixed_data_raw = generate_simulated_data(scenario_type="misto")
+    processed_mixed_data = preprocessaDados(mixed_data_raw)
 
+    prediction_mixed = predicaoCrise(processed_mixed_data, model)
+    probability_mixed = probabilidadeCrise(processed_mixed_data, model)
 
+    print(f"Dados brutos simulados (misto): {mixed_data_raw}")
+    print(f"Vetor pré-processado (misto): {processed_mixed_data}")
+    print(f"Previsão de crise (0=Normal, 1=Crise): {prediction_mixed}")
+    print(f"Probabilidade de crise: {probability_mixed:.2f}")
+
+    if prediction_mixed == 1:
+        print("RESULTADO: A IA detectou uma possível crise neste cenário ambíguo.")
+    else:
+        print("RESULTADO: A IA avalia que o cenário ambíguo não representa uma crise.")
 
 
 """
