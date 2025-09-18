@@ -64,6 +64,10 @@ async def load_model():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao carregar o modelo: {e}")
 
+@app.get("/")
+def read_root():
+    return {"message": "API de Previsão de Crise do EduCare rodando com sucesso!"}
+
 # ---- Rota da API para Predição ----
 @app.post("/predict_crisis")
 async def predict_crisis_endpoint(data: DataInput):
