@@ -12,7 +12,7 @@ from modelo.preditiva import predicaoCrise, probabilidadeCrise
 app = FastAPI()
 
 # Caminho para o arquivo do modelo
-MODEL_FILE = os.path.join("modelo", "model.pkl")
+MODEL_FILE = os.path.join("modelo","model.pkl")
 
 # Variável para armazenar o modelo carregado
 model = None
@@ -68,11 +68,10 @@ async def load_model():
 def read_root():
     return {"message": "API de Previsão de Crise do EduCare rodando com sucesso!"}
 
-# ---- Rota da API para Predição ----
-@app.post("/predict_crisis")
+# Rota da API para Predição 
 async def predict_crisis_endpoint(data: DataInput):
 
-    #Recebe os dados brutos de um usuário e retorna a probabilidade de crise.
+    #Recebe os dados brutos de um usuário e retorna a probabilidade de crise
 
     if model is None:
         raise HTTPException(status_code=500, detail="O modelo de IA não está carregado.")
@@ -97,8 +96,8 @@ async def predict_crisis_endpoint(data: DataInput):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erro no processamento dos dados: {e}")
 
-# uvicorn api:app --reload(para rodar a api) -- cntrl + C
-# http://127.0.0.1:8000/docs rota para testar no insomnia
+# uvicorn api:app --reload   para rodar a api -- cntrl + C
+# http://127.0.0.1:8000/docs rota para testar no insomia
 
 
 
