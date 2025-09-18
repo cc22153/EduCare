@@ -12,7 +12,7 @@ from modelo.preditiva import predicaoCrise, probabilidadeCrise
 app = FastAPI()
 
 # Caminho para o arquivo do modelo
-MODEL_FILE = os.path.join("model.pkl")
+MODEL_FILE = os.path.join("modelo", "model.pkl")
 
 # Variável para armazenar o modelo carregado
 model = None
