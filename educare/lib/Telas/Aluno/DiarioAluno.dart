@@ -10,8 +10,13 @@ class DiarioAluno extends StatefulWidget {
 }
 
 class _DiarioAlunoState extends State<DiarioAluno> {
+ 
   String? emocaoSelecionada;
-  final TextEditingController descricaoController = TextEditingController();
+  String? gostouDia; 
+  String? comunicacao; 
+  String? fezOQueQueria; 
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,23 +26,28 @@ class _DiarioAlunoState extends State<DiarioAluno> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.lightBlue[300],
         title: const Text(
-          'DIÁRIO',
-          style: TextStyle(color: Colors.white,),
+          'DIÁRIO DO ALUNO',
+          style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Padding(
+
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
+          
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            const SizedBox(height: 20),
             const Text(
               'Como você se sentiu hoje?',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center, 
             ),
+            const SizedBox(height: 20),
             Wrap(
               spacing: 15,
               runSpacing: 15,
+       
               children: [
                 Wrap(
                   spacing: 15,
@@ -45,45 +55,49 @@ class _DiarioAlunoState extends State<DiarioAluno> {
                     emocaoButton('😊', 'Feliz'),
                     emocaoButton('😐', 'Neutro'),
                     emocaoButton('😢', 'Triste'),
-                  ],
-                ),
-                Wrap(
-                  spacing: 15,
-                  children: [
                     emocaoButton('😠', 'Irritado'),
                     emocaoButton('😰', 'Ansioso'),
-                    emocaoButton('😴', 'Cansado'),
+                    emocaoButton('😴', 'Cansado')
                   ],
                 ),
               ],
             ),
-            const Text(
-              'Conte um pouco de como foi seu dia, você conseguiu prestar atenção na aula hoje? O que achou das atividades que o professor(a) passou?',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, wordSpacing: -1),
-              textAlign: TextAlign.center,
+            const SizedBox(height: 40),
+
+         
+            buildChoiceQuestion(
+              'Você gostou do seu dia hoje?',
+              gostouDia,
+              ['Sim', 'Não'],
+              (value) => setState(() => gostouDia = value),
             ),
-            TextField(
-              controller: descricaoController,
-              cursorColor: Colors.lightBlue[300], // cor do cursor
-              cursorWidth: 2,
-              minLines: 5,
-              maxLines: 20,
-              decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color.fromARGB(79, 0, 0, 0), width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.lightBlue[300]!, width: 2),
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
+            const SizedBox(height: 40),
+
+         
+            buildChoiceQuestion(
+              'Você conseguiu se comunicar e interagir?',
+              comunicacao,
+              ['Sim', 'Não'],
+              (value) => setState(() => comunicacao = value),
             ),
+            const SizedBox(height: 40),
+
+       
+            buildChoiceQuestion(
+              'Você conseguiu fazer o que queria hoje?',
+              fezOQueQueria,
+              ['Sim', 'Não', 'Um pouco'],
+              (value) => setState(() => fezOQueQueria = value),
+            ),
+            const SizedBox(height: 60),
+
+
+            // BOTÃO ENVIAR
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(500, 25),
+           
+                fixedSize: const Size(300, 50), 
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 backgroundColor: Colors.lightBlue[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -91,17 +105,19 @@ class _DiarioAlunoState extends State<DiarioAluno> {
               ),
               onPressed: () {
                 if (emocaoSelecionada != null &&
-                    descricaoController.text.isNotEmpty) {
+                    gostouDia != null &&
+                    comunicacao != null &&
+                    fezOQueQueria != null) {
                   enviarDiario();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Preencha todos os campos!'),
+                      content: Text('Preencha todas as perguntas obrigatórias!'),
                     ),
                   );
                 }
               },
-              child: const Text('ENVIAR', style: TextStyle(
+              child: const Text('ENVIAR RESPOSTAS', style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold
               ),),
@@ -112,19 +128,20 @@ class _DiarioAlunoState extends State<DiarioAluno> {
     );
   }
 
+  // WIDGET AUXILIAR PARA BOTÕES DE EMOÇÃO
   Widget emocaoButton(String emoji, String emocao) {
     return Column(
       children: [
         ElevatedButton(
           onPressed: () {
             setState(() {
-              emocaoSelecionada = emocao.toLowerCase();
+             emocaoSelecionada = emocao.toLowerCase(); 
             });
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(5),
-            backgroundColor: emocaoSelecionada == emocao.toLowerCase()
+            backgroundColor: emocaoSelecionada == emocao
                 ? Colors.lightBlue[300]
                 : Colors.white,
           ),
@@ -141,14 +158,59 @@ class _DiarioAlunoState extends State<DiarioAluno> {
     );
   }
 
+  // FUNÇÃO AUXILIAR PARA PERGUNTAS DE MÚLTIPLA ESCOLHA
+  Widget buildChoiceQuestion(
+  String question,
+  String? groupValue,
+  List<String> options,
+  Function(String) onChanged,
+) {
+  return SizedBox(
+    width: 500, 
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center, 
+      children: [
+        Text(
+          question,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.center, 
+        ),
+        // ESPAÇAMENTO 
+        const SizedBox(height: 20), 
+        Wrap(
+          spacing: 10,
+          alignment: WrapAlignment.center, 
+          children: options.map((option) {
+            return ChoiceChip(
+              label: Text(option),
+              selected: groupValue == option,
+              selectedColor: Colors.lightBlue[200],
+              onSelected: (selected) {
+                if (selected) {
+                  onChanged(option);
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    ),
+  );
+}
+
+  // FUNÇÃO DE ENVIO DE DADOS (ATUALIZADA)
   Future<void> enviarDiario() async {
     final supabase = Supabase.instance.client;
 
     try {
       await supabase.from('diario').insert({
         'id_aluno': widget.idAluno,
-        'humor_geral': emocaoSelecionada,
-        'texto': descricaoController.text,
+        'humor_geral': emocaoSelecionada, // <-- VÍRGULA ADICIONADA AQUI
+
+        // DADOS ENVIADOS PARA AS NOVAS COLUNAS DO SUPABASE
+        'gostou_dia': gostouDia,
+        'comunicou_aluno': comunicacao,
+        'fez_o_que_queria': fezOQueQueria,       
         'criado_em': DateTime.now().toIso8601String(),
       });
 
