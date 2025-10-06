@@ -10,16 +10,70 @@ class EstadoEmocional extends StatefulWidget {
 }
 
 class _EstadoEmocionalState extends State<EstadoEmocional> {
+  // Variáveis de estado existentes
   String? emocaoSelecionada;
   String? motivoSelecionado;
   final TextEditingController necessidadeController = TextEditingController();
 
+  // NOVAS VARIÁVEIS DE ESTADO (Para as perguntas Sim/Não)
+  String? dorFisica;
+  String? querFicarSozinho;
+  String? precisaAjuda;
+
+  // Mapa para conversão de string para inteiro (usado no envio)
+  static const Map<String, int> _yesNoMap = {"Sim": 1, "Não": 0};
+
   final supabase = Supabase.instance.client;
 
+  // FUNÇÃO AUXILIAR PARA PERGUNTAS DE MÚLTIPLA ESCOLHA (chips)
+  Widget buildChoiceQuestion(
+    String question,
+    String? groupValue,
+    List<String> options,
+    Function(String) onChanged,
+  ) {
+    return SizedBox(
+      width: 500,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            question,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), // AZUL ESCURO
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10), 
+          Wrap(
+            spacing: 10,
+            alignment: WrapAlignment.center,
+            children: options.map((option) {
+              return ChoiceChip(
+                label: Text(
+                  option,
+                  style: TextStyle(
+                    color: groupValue == option ? Colors.white : Colors.black87,
+                  ),
+                ),
+                selected: groupValue == option,
+                selectedColor: Colors.lightBlue[300],
+                onSelected: (selected) {
+                  if (selected) {
+                    onChanged(option);
+                  }
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> enviarEstadoEmocional() async {
-    if (emocaoSelecionada == null) {
+    // Validação dos campos
+    if (emocaoSelecionada == null || dorFisica == null || querFicarSozinho == null || precisaAjuda == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Selecione uma emoção")),
+        const SnackBar(content: Text("Preencha todas as perguntas obrigatórias!")),
       );
       return;
     }
@@ -30,6 +84,11 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
         'sentimento': emocaoSelecionada!.toLowerCase(),
         'motivo': motivoSelecionado,
         'texto': necessidadeController.text,
+        
+        // NOVOS CAMPOS COM CONVERSÃO DE STRING PARA INT (1 ou 0)
+        'dor_fisica': _yesNoMap[dorFisica!],
+        'quer_ficar_sozinho': _yesNoMap[querFicarSozinho!],
+        'precisa_ajuda': _yesNoMap[precisaAjuda!],
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,8 +96,9 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
       );
       Navigator.pop(context);
     } catch (e) {
+      print("Erro ao enviar: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro ao enviar: $e")),
+        SnackBar(content: Text("Erro ao enviar: ${e.toString()}")),
       );
     }
   }
@@ -107,94 +167,88 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Text(
-                'Como você está se sentindo agora?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              Wrap(
-                spacing: 15,
-                runSpacing: 15,
-                children: [
-                  Wrap(
-                    spacing: 15,
-                    children: [
-                      emocaoButton('😊', 'Feliz'),
-                      emocaoButton('😐', 'Neutro'),
-                      emocaoButton('😢', 'Triste'),
-                    ],
-                  ),
-                  Wrap(
-                    spacing: 15,
-                    children: [
-                      emocaoButton('😠', 'Irritado'),
-                      emocaoButton('😰', 'Ansioso'),
-                      emocaoButton('😴', 'Cansado'),
-                    ],
-                  ),
-                ],
-              ),
-              const Text(
-                'O que está te deixando assim?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              Wrap(
-                spacing: 15,
-                runSpacing: 15,
-                children: [
-                  motivoButton('Aula'),
-                  motivoButton('Pessoas'),
-                  motivoButton('Barulho'),
-                ],
-              ),
-              const Text(
-                'O que você precisa agora?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              TextField(
-                controller: necessidadeController,
-                cursorColor: Colors.lightBlue[300],
-                cursorWidth: 2,
-                minLines: 5,
-                maxLines: 20,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(79, 0, 0, 0), width: 2),
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.lightBlue[300]!, width: 2),
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  ),
+      body: SingleChildScrollView( // Usando SingleChildScrollView para acomodar as novas perguntas
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            
+            // PERGUNTA 1: EMOÇÃO
+            Text(
+              'Como está se sentindo agora?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), // AZUL ESCURO
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 15,
+              runSpacing: 15,
+              children: [
+                emocaoButton('😊', 'Feliz'),
+                emocaoButton('😐', 'Neutro'),
+                emocaoButton('😢', 'Triste'),
+                emocaoButton('😠', 'Irritado'),
+                emocaoButton('😰', 'Ansioso'),
+                emocaoButton('😴', 'Cansado'),
+              ],
+            ),
+            
+            const SizedBox(height: 40),
+
+            // PERGUNTA 3: DOR FÍSICA
+            buildChoiceQuestion(
+              'Você está sentindo dor física?',
+              dorFisica,
+              ['Sim', 'Não'],
+              (value) => setState(() => dorFisica = value),
+            ),
+            
+            const SizedBox(height: 40),
+
+            // PERGUNTA 4: QUER FICAR SOZINHO
+            buildChoiceQuestion(
+              'Você quer ficar sozinho agora?',
+              querFicarSozinho,
+              ['Sim', 'Não'],
+              (value) => setState(() => querFicarSozinho = value),
+            ),
+
+            const SizedBox(height: 40),
+
+            // PERGUNTA 5: PRECISA DE AJUDA
+            buildChoiceQuestion(
+              'Você precisa de ajuda?',
+              precisaAjuda,
+              ['Sim', 'Não'],
+              (value) => setState(() => precisaAjuda = value),
+            ),
+            
+            const SizedBox(height: 60),
+
+            
+
+            // BOTÃO ENVIAR
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                fixedSize: const Size(300, 50), // Ajustado para 300 de largura para centralizar melhor
+                backgroundColor: Colors.lightBlue[300],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(500, 25),
-                  backgroundColor: Colors.lightBlue[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: enviarEstadoEmocional,
-                child: const Text(
-                  'ENVIAR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+              onPressed: enviarEstadoEmocional,
+              child: const Text(
+                'ENVIAR',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

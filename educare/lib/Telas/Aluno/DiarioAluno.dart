@@ -16,8 +16,6 @@ class _DiarioAlunoState extends State<DiarioAluno> {
   String? comunicacao; 
   String? fezOQueQueria; 
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,9 +36,9 @@ class _DiarioAlunoState extends State<DiarioAluno> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Como você se sentiu hoje?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), // AZUL ESCURO
               textAlign: TextAlign.center, 
             ),
             const SizedBox(height: 20),
@@ -128,20 +126,20 @@ class _DiarioAlunoState extends State<DiarioAluno> {
     );
   }
 
-  // WIDGET AUXILIAR PARA BOTÕES DE EMOÇÃO
+  
   Widget emocaoButton(String emoji, String emocao) {
     return Column(
       children: [
         ElevatedButton(
           onPressed: () {
             setState(() {
-             emocaoSelecionada = emocao.toLowerCase(); 
+              emocaoSelecionada = emocao.toLowerCase();
             });
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(5),
-            backgroundColor: emocaoSelecionada == emocao
+            backgroundColor: emocaoSelecionada == emocao.toLowerCase()
                 ? Colors.lightBlue[300]
                 : Colors.white,
           ),
@@ -152,7 +150,7 @@ class _DiarioAlunoState extends State<DiarioAluno> {
         ),
         Text(
           emocao,
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14), 
         ),
       ],
     );
@@ -172,19 +170,24 @@ class _DiarioAlunoState extends State<DiarioAluno> {
       children: [
         Text(
           question,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), 
           textAlign: TextAlign.center, 
         ),
-        // ESPAÇAMENTO 
         const SizedBox(height: 20), 
         Wrap(
           spacing: 10,
           alignment: WrapAlignment.center, 
           children: options.map((option) {
             return ChoiceChip(
-              label: Text(option),
+              label: Text(
+                option,
+                style: TextStyle(
+                  // Mantém o rótulo do chip com a cor padrão (ou branco se selecionado)
+                  color: groupValue == option ? Colors.white : Colors.black87
+                ), 
+              ),
               selected: groupValue == option,
-              selectedColor: Colors.lightBlue[200],
+              selectedColor: Colors.lightBlue[300], 
               onSelected: (selected) {
                 if (selected) {
                   onChanged(option);
@@ -198,16 +201,15 @@ class _DiarioAlunoState extends State<DiarioAluno> {
   );
 }
 
-  // FUNÇÃO DE ENVIO DE DADOS (ATUALIZADA)
+  // FUNÇÃO DE ENVIO DE DADOS (MANTIDA)
   Future<void> enviarDiario() async {
     final supabase = Supabase.instance.client;
 
     try {
       await supabase.from('diario').insert({
         'id_aluno': widget.idAluno,
-        'humor_geral': emocaoSelecionada, // <-- VÍRGULA ADICIONADA AQUI
+        'humor_geral': emocaoSelecionada, 
 
-        // DADOS ENVIADOS PARA AS NOVAS COLUNAS DO SUPABASE
         'gostou_dia': gostouDia,
         'comunicou_aluno': comunicacao,
         'fez_o_que_queria': fezOQueQueria,       
