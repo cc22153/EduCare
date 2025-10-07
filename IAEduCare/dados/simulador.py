@@ -5,7 +5,6 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     data = {}
 
     # Lógica para cenários de treinamento bem definidos 
-    # Isso garante que o modelo aprenda com exemplos claros
     if scenario_type == "normal":
         data["frequencia_cardiaca_media"] = random.randint(60, 90)
         data["nivel_agitacao_media"] = random.uniform(0.0, 0.2)
@@ -14,7 +13,12 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = []
         data["fez_o_que_queria"] = "Sim"
-        data["estado_emocional_aluno"] = "Bem"
+        
+        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
+        data["sentimento"] = random.choice(["feliz", "neutro"]) # Chave 'sentimento' e valores minúsculos
+        data["motivo"] = None # Sem motivo de incômodo em cenário normal
+        # -----------------------------------------------------------------
+        
         data["dor_fisica"] = "Não"
         data["quer_ficar_sozinho"] = "Não"
         data["precisa_ajuda"] = "Não"
@@ -38,7 +42,12 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = random.sample(["Barulho alto", "Pessoas", "Luz forte"], random.randint(1, 3))
         data["fez_o_que_queria"] = "Não"
-        data["estado_emocional_aluno"] = random.choice(["Bravo", "Medo"])
+        
+        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
+        data["sentimento"] = random.choice(["irritado", "ansioso", "triste", "cansado"]) # Novas emoções de stress
+        data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho"]) # Incômodo presente
+        # -----------------------------------------------------------------
+        
         data["dor_fisica"] = random.choice(["Sim", "Não"])
         data["quer_ficar_sozinho"] = "Sim"
         data["precisa_ajuda"] = "Sim"
@@ -55,7 +64,6 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         data["is_crisis"] = 1
     
     # Lógica para cenários mistos/limítrofes (casos de borda)
-    # Isso é crucial para o modelo aprender a tomar decisões em situações ambíguas.
     else: # scenario_type == "misto"
         # Gerar dados completamente aleatórios
         data["frequencia_cardiaca_media"] = random.randint(60, 140)
@@ -65,7 +73,12 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = random.sample(["Barulho alto", "Luz forte", "Pessoas"], random.randint(0, 1))
         data["fez_o_que_queria"] = random.choice(["Sim", "Não", "Um pouco"])
-        data["estado_emocional_aluno"] = random.choice(["Bravo", "Triste", "Medo", "Cansado", "Bem"])
+        
+        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
+        data["sentimento"] = random.choice(["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"])
+        data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho", None])
+        # -----------------------------------------------------------------
+        
         data["dor_fisica"] = random.choice(["Sim", "Não"])
         data["quer_ficar_sozinho"] = random.choice(["Sim", "Não"])
         data["precisa_ajuda"] = random.choice(["Sim", "Não"])
@@ -85,7 +98,8 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         if data["frequencia_cardiaca_media"] > 120: crisis_score += 2
         if data["nivel_agitacao_media"] > 0.5: crisis_score += 2
         if data["sentimento_hoje"] == "Bravo": crisis_score += 2
-        if data["estado_emocional_aluno"] in ["Bravo", "Medo"]: crisis_score += 2
+        # MUDANÇA NA CHAVE AQUI
+        if data["sentimento"] in ["irritado", "ansioso"]: crisis_score += 2 
         if data["dor_fisica"] == "Sim": crisis_score += 1
         if "Barulho alto" in data["incomodado_aluno"]: crisis_score += 1
         if data["humor_aluno_edu"] == "Irritado": crisis_score += 2
@@ -101,7 +115,6 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
             data["is_crisis"] = 0
 
     # Lógica de preenchimento para campos que não foram definidos nos cenários
-    # Isso garante que todos os dicionários tenham a mesma estrutura, o que é crucial para o pré-processamento.
     default_values = {
         "idade_aluno": random.randint(12, 18),
         "sexo_aluno": random.choice(["Masculino", "Feminino", "Prefere não informar"]),
@@ -115,5 +128,9 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     for key, value in default_values.items():
         if key not in data:
             data[key] = value
+
+    # GARANTINDO QUE A CHAVE ANTIGA NÃO CAUSE ERRO no preprocessaDados
+    if "estado_emocional_aluno" in data:
+        del data["estado_emocional_aluno"] 
 
     return data

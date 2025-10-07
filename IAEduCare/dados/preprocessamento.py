@@ -9,16 +9,19 @@ def preprocessaDados(data_input: dict) -> list:
     CRISIS_FREQ_MAP = {"Raramente": 0, "Algumas vezes por semana": 1, "Diariamente": 2}
 
     # Aluno - Diário
-    FEELING_MAP = {"Feliz": 0, "Normal": 1, "Triste": 2, "Bravo": 3}
+    # Corrigido: Todas as 6 emoções.
+    FEELING_MAP = {"feliz": 0, "neutro": 1, "triste": 2, "irritado": 3, "ansioso": 4, "cansado": 5}
     LIKED_DAY_MAP = {"Sim": 1, "Não": 0}
     COMMUNICATED_MAP = {"Sim": 1, "Não": 0}
     DID_WHAT_WANTED_MAP = {"Sim": 1, "Não": 0, "Um pouco": 0.5} 
     
     # Aluno - Estado Emocional
-    EMOTIONAL_STATE_MAP = {"Bravo": 0, "Triste": 1, "Medo": 2, "Cansado": 3, "Bem": 4}
+    # Corrigido: Todas as 6 emoções.
+    EMOTIONAL_STATE_MAP = {"feliz": 0, "neutro": 1, "triste": 2, "irritado": 3, "ansioso": 4, "cansado": 5}
     PHYSICAL_PAIN_MAP = {"Sim": 1, "Não": 0}
     WANT_TO_BE_ALONE_MAP = {"Sim": 1, "Não": 0}
     NEED_HELP_MAP = {"Sim": 1, "Não": 0}
+    MOTIVE_MAP = {"Aula": 0, "Pessoas": 1, "Barulho": 2, None: 3} 
 
     # Educador - Perguntas Diárias
     EDUCATOR_MOOD_MAP = {"Feliz": 0, "Neutro": 1, "Triste": 2, "Irritado": 3}
@@ -37,8 +40,8 @@ def preprocessaDados(data_input: dict) -> list:
 
     feature_vector = []
 
-    feature_vector.append(data_input.get("frequencia_cardiaca_media", 0)) # Média da Frequencia em um período
-    feature_vector.append(data_input.get("nivel_agitacao_media", 0.0))    # Média da agitação em um período
+    feature_vector.append(data_input.get("frequencia_cardiaca_media", 0)) 
+    feature_vector.append(data_input.get("nivel_agitacao_media", 0.0))    
 
     # Questionário do Responsável
     feature_vector.append(data_input.get("idade_aluno", 0))
@@ -59,20 +62,20 @@ def preprocessaDados(data_input: dict) -> list:
     feature_vector.append(CRISIS_FREQ_MAP.get(data_input.get("frequencia_crises", "Raramente"), 0))
 
     # Questionário do Aluno - Diário 
-    feature_vector.append(FEELING_MAP.get(data_input.get("sentimento_hoje", "Normal"), 1))
+    # MUDANÇA: Forçando minúsculas e ajustando fallback para 'neutro'
+    feature_vector.append(FEELING_MAP.get(data_input.get("sentimento_hoje", "neutro").lower(), 1))
     feature_vector.append(LIKED_DAY_MAP.get(data_input.get("gostou_dia", "Sim"), 1))
     feature_vector.append(COMMUNICATED_MAP.get(data_input.get("comunicou_aluno", "Sim"), 1)) 
-
-    # O que incomodou 
-    INCOMFORT_LIST = ["Barulho alto", "Luz forte", "Pessoas"] 
-    current_incomforts = data_input.get("incomodado_aluno", [])
-    for i in INCOMFORT_LIST:
-        feature_vector.append(1 if i in current_incomforts else 0)
-
+   
     feature_vector.append(DID_WHAT_WANTED_MAP.get(data_input.get("fez_o_que_queria", "Sim"), 1))
 
     #  Questionário do Aluno - Estado Emocional 
-    feature_vector.append(EMOTIONAL_STATE_MAP.get(data_input.get("estado_emocional_aluno", "Bem"), 4))
+    # MUDANÇA: Forçando minúsculas e ajustando fallback para 'neutro' (valor 1)
+    feature_vector.append(EMOTIONAL_STATE_MAP.get(data_input.get("sentimento", "neutro").lower(), 1)) 
+    
+    # CAMPO DE MOTIVO ADICIONADO AQUI
+    feature_vector.append(MOTIVE_MAP.get(data_input.get("motivo", None), 3)) 
+    
     feature_vector.append(PHYSICAL_PAIN_MAP.get(data_input.get("dor_fisica", "Não"), 0))
     feature_vector.append(WANT_TO_BE_ALONE_MAP.get(data_input.get("quer_ficar_sozinho", "Não"), 0))
     feature_vector.append(NEED_HELP_MAP.get(data_input.get("precisa_ajuda", "Não"), 0))
@@ -81,7 +84,7 @@ def preprocessaDados(data_input: dict) -> list:
     feature_vector.append(EDUCATOR_MOOD_MAP.get(data_input.get("humor_aluno_edu", "Neutro"), 1))
     feature_vector.append(PARTICIPATION_MAP.get(data_input.get("participacao_atividades", "Sim"), 1))
     feature_vector.append(INTERACTION_MAP.get(data_input.get("interacao_colegas", "Boa"), 2))
-    feature_vector.append(CRISIS_OCCURRED_MAP.get(data_input.get("crise_ocorrida_edu", "Não"), 0)) # Sufixo para educador
+    feature_vector.append(CRISIS_OCCURRED_MAP.get(data_input.get("crise_ocorrida_edu", "Não"), 0)) 
     feature_vector.append(COMMUNICATION_EDU_MAP.get(data_input.get("comunicacao_verbal_edu", "Com facilidade"), 0))
 
     #  Questionário do Educador - Perguntas Semanais 

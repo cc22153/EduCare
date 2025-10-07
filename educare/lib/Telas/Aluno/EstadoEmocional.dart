@@ -42,7 +42,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), // AZUL ESCURO
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 10), 
+          const SizedBox(height: 20), // AUMENTO DE ESPAÇAMENTO AQUI
           Wrap(
             spacing: 10,
             alignment: WrapAlignment.center,
@@ -70,10 +70,10 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   }
 
   Future<void> enviarEstadoEmocional() async {
-    // Validação dos campos
+    // Validação dos campos: Motivo e Necessidade não são obrigatórios
     if (emocaoSelecionada == null || dorFisica == null || querFicarSozinho == null || precisaAjuda == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Preencha todas as perguntas obrigatórias!")),
+        const SnackBar(content: Text("Preencha todas as perguntas de emoção e Sim/Não!")),
       );
       return;
     }
@@ -82,8 +82,8 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
       await supabase.from('estado_emocional').insert({
         'id_aluno': widget.idAluno,
         'sentimento': emocaoSelecionada!.toLowerCase(),
-        'motivo': motivoSelecionado,
-        'texto': necessidadeController.text,
+        'motivo': motivoSelecionado, // Mantido (opcional)
+        'texto': necessidadeController.text, // Mantido (opcional)
         
         // NOVOS CAMPOS COM CONVERSÃO DE STRING PARA INT (1 ou 0)
         'dor_fisica': _yesNoMap[dorFisica!],
@@ -104,6 +104,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   }
 
   Widget emocaoButton(String emoji, String titulo) {
+    // ... (Mantido o código da função emocaoButton)
     return Column(
       children: [
         ElevatedButton(
@@ -133,6 +134,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   }
 
   Widget motivoButton(String motivo) {
+    // ... (Mantido o código da função motivoButton)
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: motivoSelecionado == motivo
@@ -167,12 +169,12 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView( // Usando SingleChildScrollView para acomodar as novas perguntas
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             
             // PERGUNTA 1: EMOÇÃO
             Text(
@@ -194,7 +196,26 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
               ],
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 35), // ESPAÇAMENTO ENTRE SEÇÕES
+
+            // PERGUNTA 2: MOTIVO (REINSERIDA)
+            Text(
+              'O que está te incomodando?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue[900]), // AZUL ESCURO
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 15,
+              runSpacing: 15,
+              children: [
+                motivoButton('Aula'),
+                motivoButton('Pessoas'),
+                motivoButton('Barulho'),
+              ],
+            ),
+            
+            const SizedBox(height: 30), // ESPAÇAMENTO ENTRE SEÇÕES
 
             // PERGUNTA 3: DOR FÍSICA
             buildChoiceQuestion(
@@ -204,7 +225,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
               (value) => setState(() => dorFisica = value),
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 20), // ESPAÇAMENTO ENTRE SEÇÕES
 
             // PERGUNTA 4: QUER FICAR SOZINHO
             buildChoiceQuestion(
@@ -214,7 +235,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
               (value) => setState(() => querFicarSozinho = value),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 30), // ESPAÇAMENTO ENTRE SEÇÕES
 
             // PERGUNTA 5: PRECISA DE AJUDA
             buildChoiceQuestion(
@@ -224,14 +245,12 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
               (value) => setState(() => precisaAjuda = value),
             ),
             
-            const SizedBox(height: 60),
-
-            
+            const SizedBox(height: 30), // ESPAÇAMENTO ENTRE SEÇÕES
 
             // BOTÃO ENVIAR
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(300, 50), // Ajustado para 300 de largura para centralizar melhor
+                fixedSize: const Size(300, 50),
                 backgroundColor: Colors.lightBlue[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -246,6 +265,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
                 ),
               ),
             ),
+            const SizedBox(height: 20), // Espaçamento final
           ],
         ),
       ),
