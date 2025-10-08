@@ -16,6 +16,46 @@ class InicioAluno extends StatefulWidget {
 }
 
 class InicioAlunoState extends State<InicioAluno> {
+  
+  // Função que mostra o pop-up 
+  void _mostrarDialogoSair() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação'),
+          content: const Text('Tem certeza de que deseja sair da sua conta e voltar para o login?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(); 
+              },
+            ),
+            TextButton(
+              child: const Text('Sair', style: TextStyle(color: Colors.red)),
+              onPressed: () async {
+             
+                Navigator.of(context).pop(); 
+                
+               
+                await Supabase.instance.client.auth.signOut();
+                
+             
+                if (mounted) { 
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Login()),
+                      (Route<dynamic> route) => false,
+                    );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -23,236 +63,221 @@ class InicioAlunoState extends State<InicioAluno> {
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(15, 60, 15, 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(15),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Seja Bem-Vindo, \n${widget.usuario['nome']}!",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFF009ADA),
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.account_circle,
-                      color: Colors.blue[300],
-                      size: 55,
-                    ),
-                    onSelected: (value) {
-                      if (value == 'editar') {
-                        Navigator.pushNamed(context, '/editarPerfil');
-                      } else if (value == 'sair') {
-                        Supabase.instance.client.auth.signOut();
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => const Login()),
-                          (Route<dynamic> route) => false,
-                        );
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'editar',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, color: Colors.blue),
-                            SizedBox(width: 8),
-                            Text('Editar Perfil'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'sair',
-                        child: Row(
-                          children: [
-                            Icon(Icons.logout, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Sair'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Color(0xFF009ADA),
-              ),
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              child: const Column(
-                children: [
-                  Text(
-                    "Recados Importantes!",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Divider(
-                    height: 10,
+      // Utilizamos Stack para posicionar o botão de sair fora do SingleChildScrollView
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            // Ajustamos o padding superior para não sobrepor o botão de sair
+            padding: const EdgeInsets.fromLTRB(15, 60, 15, 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Container de Boas-Vindas (Modificado)
+                Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                     color: Colors.white,
-                    indent: 10,
-                    endIndent: 10,
                   ),
-                  Text(
-                    "Do dia 18/04 ao 23/04 não teremos aulas!",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: buttonWidth * 2.5,
-              height: buttonWidth,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RotinaAluno()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  alignment: const AlignmentDirectional(-0.8, 0),
-                  backgroundColor: Colors.blue[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // Alinha o texto à direita
+                    children: [
+                      
+                      Text(
+                        "Seja Bem-Vindo, \n${widget.usuario['nome']}!",
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF009ADA),
+                        ),
+                      ),
+                      // O PopupMenuButton foi removido
+                    ],
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
+                const SizedBox(height: 15),
+                Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Color(0xFF009ADA),
+                  ),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  child: const Column(
+                    children: [
+                      Text(
+                        "Recados Importantes!",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Divider(
+                        height: 10,
+                        color: Colors.white,
+                        indent: 10,
+                        endIndent: 10,
+                      ),
+                      Text(
+                        "Do dia 18/04 ao 23/04 não teremos aulas!",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: buttonWidth * 2.5,
+                  height: buttonWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RotinaAluno()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      alignment: const AlignmentDirectional(-0.8, 0),
+                      backgroundColor: Colors.blue[300],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          DateFormat.EEEE('pt_BR')
-                              .format(DateTime.now())
-                              .toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(255, 221, 63, 52),
-                              fontWeight: FontWeight.bold),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat.EEEE('pt_BR')
+                                  .format(DateTime.now())
+                                  .toUpperCase(),
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 221, 63, 52),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              DateTime.now().day.toString(),
+                              style: const TextStyle(
+                                  fontSize: 32, color: Colors.white),
+                            )
+                          ],
                         ),
-                        Text(
-                          DateTime.now().day.toString(),
-                          style: const TextStyle(
-                              fontSize: 32, color: Colors.white),
+                        const Text(
+                          "Sem eventos hoje",
+                          style: TextStyle(fontSize: 16, color: Colors.white54),
                         )
                       ],
                     ),
-                    const Text(
-                      "Sem eventos hoje",
-                      style: TextStyle(fontSize: 16, color: Colors.white54),
-                    )
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: buttonWidth,
+                      height: buttonWidth,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DiarioAluno(idAluno: widget.aluno['id'],)),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[300],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/diario.png',
+                              width: 120,
+                              height: 120,
+                            ),
+                            const Text(
+                              "DIÁRIO",
+                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: buttonWidth,
+                      height: buttonWidth,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EstadoEmocional(idAluno: widget.aluno['id'])),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[300],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/emoji.png',
+                              width: 110,
+                              height: 110,
+                            ),
+                            const Text(
+                              "Como você esta se sentindo ?",
+                              style: TextStyle(fontSize: 16, color: Colors.white, wordSpacing: -2),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: buttonWidth,
-                  height: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DiarioAluno(idAluno: widget.aluno['id'],)),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/diario.png',
-                          width: 120,
-                          height: 120,
-                        ),
-                        const Text(
-                          "DIÁRIO",
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: buttonWidth,
-                  height: buttonWidth,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EstadoEmocional(idAluno: widget.aluno['id'])),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/emoji.png',
-                          width: 110,
-                          height: 110,
-                        ),
-                        const Text(
-                          "Como você esta se sentindo ?",
-                          style: TextStyle(fontSize: 16, color: Colors.white, wordSpacing: -2),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                
-
               ],
             ),
-          ],
-        ),
+          ),
+          
+    
+          Positioned(
+            top: 15, 
+            left: 5,  
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back, 
+                color: Colors.white, 
+                size: 30,
+              ),
+              onPressed: _mostrarDialogoSair, // Chama a função de pop-up
+            ),
+          ),
+        ],
       ),
     );
   }
+
 
   Widget botaoPadrao(String texto, VoidCallback onPressed, IconData icone) {
     return SizedBox(
