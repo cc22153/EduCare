@@ -47,20 +47,16 @@ class PosCadastro extends StatelessWidget {
 
             const SizedBox(height: 50),
 
-            ElevatedButton(
-              onPressed: () {
-                 Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const InicioResponsavel()));
-              },
+            ElevatedButton(   onPressed: () {  Navigator.pushReplacement(  context,
+            
+             MaterialPageRoute(builder: (context) => const InicioResponsavel()));},
+             
               style: ElevatedButton.styleFrom(
 
                 backgroundColor: Colors.blueAccent,
-                
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              ),
-              child: const Text(
-                'CONFIRMAR CONTA',
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),),
+                child: const Text(  'CONFIRMAR CONTA',
                 style: TextStyle(fontSize: 16),
               ),
             ),

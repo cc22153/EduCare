@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8b8839a3-9a53-4dd1-9868-d232e0b55af5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/ApiApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/ApiApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/config/CorsConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/config/CorsConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/AlunoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/AlunoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/AtividadeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/AtividadeController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/AulaController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/AulaController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/HelloController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/HelloController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/MonitoramentoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/MonitoramentoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/ProfessorController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/ProfessorController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/ResponsavelController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/ResponsavelController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/controller/RotinaController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/controller/RotinaController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/dto/LoginRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/dto/LoginRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/Atividade.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/Atividade.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/Aula.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/Aula.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/Monitoramento.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/Monitoramento.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/DadosCadastroUsuario.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/DadosCadastroUsuario.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/TipoUsuario.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/TipoUsuario.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/Usuario.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/model/usuario/Usuario.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/AlunoRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/AlunoRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/AtividadeRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/AtividadeRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/AulaRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/AulaRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/MonitoramentoRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/MonitoramentoRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/ProfessorRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/ProfessorRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/ResponsavelRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/ResponsavelRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Educare/api/repository/RotinaRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Educare/api/repository/RotinaRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Models/Usuario.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Models/Usuario.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Services/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Services/auth_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Aluno/InicioAluno.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Aluno/InicioAluno.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Cadastro.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Cadastro.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Login.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Professor/InicioProfessor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Professor/InicioProfessor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/InicioResponsavel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/InicioResponsavel.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/PosCadastro.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/PosCadastro.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/Questionario.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/Telas/Responsavel/Questionario.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../educare/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../educare/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2vlVC5W95B6itwPBTZmkaN4G6I8" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.ApiApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="ApiApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Educare.api.ApiApplication" />
+      <module name="api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Educare.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ApiApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8b8839a3-9a53-4dd1-9868-d232e0b55af5" name="Changes" comment="" />
+      <created>1744719517621</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1744719517621</updated>
+    </task>
+    <servers />
+  </component>
+</project>

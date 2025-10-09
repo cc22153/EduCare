@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'DetalhesAluno.dart'; 
-import 'AdicionarAluno.dart'; 
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'DetalhesAluno.dart';
+import 'AdicionarAluno.dart';
 
 class Alunos extends StatefulWidget {
   const Alunos({super.key});
@@ -10,40 +11,51 @@ class Alunos extends StatefulWidget {
 }
 
 class _AlunosState extends State<Alunos> {
-  
-  List<Map<String, String>> listaAlunos = [
-    {'nome': 'Aluno 1', 'turma': '3º Ano A'},
-    {'nome': 'Aluno 2', 'turma': '2º Ano B'},
-    {'nome': 'Aluno 3', 'turma': '1º Ano C'},
-  ];
+  final supabase = Supabase.instance.client;
 
-  void removerAluno(int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Remover Aluno'),
-          content: const Text('Deseja realmente remover este aluno?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('CANCELAR'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  listaAlunos.removeAt(index);
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('REMOVER'),
-            ),
-          ],
-        );
-      },
-    );
+  Future<List<Map<String, dynamic>>> carregarAlunos() async {
+    final userId = supabase.auth.currentUser!.id;
+
+    // 1. Buscar as turmas do professor
+    final turmasResponse = await supabase
+        .from('professor_turma')
+        .select()
+        .eq('id_professor', userId);
+
+    List<Map<String, dynamic>> listaAlunos = [];
+
+    for (final item in turmasResponse) {
+      final idTurma = item['id_turma'];
+
+      // 2. Buscar alunos da turma
+      final alunosResponse =
+          await supabase.from('aluno').select().eq('id_turma', idTurma);
+
+      for (final aluno in alunosResponse) {
+        // 3. Buscar nome da turma
+        final turmaResponse = await supabase
+            .from('turma')
+            .select()
+            .eq('id', idTurma)
+            .single(); // Pega apenas o primeiro
+
+        final nomeTurma = turmaResponse['nome'];
+
+        final nomeAluno = await supabase
+            .from('usuario')
+            .select('nome')
+            .eq('id', aluno['id'])
+            .single();
+
+        listaAlunos.add({
+          'nome': nomeAluno['nome'],
+          'escola': turmaResponse['escola'],
+          'turma': nomeTurma,
+        });
+      }
+    }
+
+    return listaAlunos;
   }
 
   @override
@@ -54,51 +66,59 @@ class _AlunosState extends State<Alunos> {
         title: const Text('Alunos'),
         backgroundColor: Colors.lightBlue[300],
       ),
-      body: ListView.builder(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: carregarAlunos(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        itemCount: listaAlunos.length,
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          }
 
-        itemBuilder: (context, index) {
+          final listaAlunos = snapshot.data ?? [];
 
-          return Card(
-              
-            child: ListTile(
+          if (listaAlunos.isEmpty) {
+            return const Center(child: Text('Nenhum aluno encontrado.'));
+          }
 
-              title: Text(listaAlunos[index]['nome']!),
-
-              subtitle: Text(listaAlunos[index]['turma']!),
-
-              trailing: IconButton(
-
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  removerAluno(index);
-                },
-              ),
-              onTap: () {
-                Navigator.push(
-                context,
-                MaterialPageRoute(
-                 builder: (context) => DetalhesAluno(
-                 nomeAluno: listaAlunos[index]['nome']!,
-                 turmaAluno: listaAlunos[index]['turma']!,
-               ),
-               ),
-               );
-              },
-            ),
+          return ListView.builder(
+            itemCount: listaAlunos.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0), // ajuste o valor como quiser
+                child: Card(
+                  child: ListTile(
+                    title: Text(listaAlunos[index]['nome'] ?? ''),
+                    subtitle: Text(
+                        'Colégio: ${listaAlunos[index]['escola']}\nTurma: ${listaAlunos[index]['turma'] ?? ''}'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetalhesAluno(
+                            nomeAluno: listaAlunos[index]['nome'] ?? 'Sem nome',
+                            turmaAluno: listaAlunos[index]['turma'] ?? 'Sem turma',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
           );
+
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightBlue[300],
-        onPressed: () {Navigator.push(
-                context,
-                MaterialPageRoute(
-                 builder: (context) => AdicionarAluno(),
-               ),
-               );
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AdicionarAluno()),
+          );
         },
         child: const Icon(Icons.add),
       ),

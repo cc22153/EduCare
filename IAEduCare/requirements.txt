@@ -1,0 +1,7 @@
+# Arquivo: requirements.txt
+fastapi
+uvicorn
+pydantic
+scikit-learn==1.7.1
+joblib
+numpy
