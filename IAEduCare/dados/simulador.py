@@ -1,5 +1,7 @@
 import random
+import numpy as np
 
+# Função que gera uma única amostra de dados fictícios para treinamento
 def generate_simulated_data(scenario_type: str = "normal") -> dict:
 
     data = {}
@@ -8,16 +10,19 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     if scenario_type == "normal":
         data["frequencia_cardiaca_media"] = random.randint(60, 90)
         data["nivel_agitacao_media"] = random.uniform(0.0, 0.2)
-        data["sentimento_hoje"] = random.choice(["Feliz", "Normal"])
+        
+        # Emoções Diárias (Ajustado para as 6 emoções em minúsculas)
+        data["sentimento_hoje"] = random.choice(["feliz", "neutro"]) 
+        
         data["gostou_dia"] = "Sim"
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = []
         data["fez_o_que_queria"] = "Sim"
         
-        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
-        data["sentimento"] = random.choice(["feliz", "neutro"]) # Chave 'sentimento' e valores minúsculos
+        # --- ESTADO EMOCIONAL (Estado Emocional) ---
+        data["sentimento"] = random.choice(["feliz", "neutro"]) # Chave 'sentimento' para a segunda emoção
         data["motivo"] = None # Sem motivo de incômodo em cenário normal
-        # -----------------------------------------------------------------
+        # ---------------------------------------------
         
         data["dor_fisica"] = "Não"
         data["quer_ficar_sozinho"] = "Não"
@@ -37,16 +42,20 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
     elif scenario_type == "crise":
         data["frequencia_cardiaca_media"] = random.randint(130, 170)
         data["nivel_agitacao_media"] = random.uniform(0.7, 1.0)
-        data["sentimento_hoje"] = random.choice(["Bravo", "Triste"])
+        
+        # Emoções Diárias (Ajustado para as 6 emoções em minúsculas)
+        data["sentimento_hoje"] = random.choice(["irritado", "triste", "ansioso", "cansado"])
+        
         data["gostou_dia"] = "Não"
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = random.sample(["Barulho alto", "Pessoas", "Luz forte"], random.randint(1, 3))
         data["fez_o_que_queria"] = "Não"
         
-        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
-        data["sentimento"] = random.choice(["irritado", "ansioso", "triste", "cansado"]) # Novas emoções de stress
+        # --- ESTADO EMOCIONAL (Estado Emocional) ---
+        # Novas emoções de stress e campo 'motivo' preenchido
+        data["sentimento"] = random.choice(["irritado", "ansioso", "triste", "cansado"]) 
         data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho"]) # Incômodo presente
-        # -----------------------------------------------------------------
+        # ---------------------------------------------
         
         data["dor_fisica"] = random.choice(["Sim", "Não"])
         data["quer_ficar_sozinho"] = "Sim"
@@ -68,16 +77,19 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         # Gerar dados completamente aleatórios
         data["frequencia_cardiaca_media"] = random.randint(60, 140)
         data["nivel_agitacao_media"] = random.uniform(0, 1)
-        data["sentimento_hoje"] = random.choice(["Feliz", "Normal", "Triste", "Bravo"])
+        
+        # Emoções Diárias
+        data["sentimento_hoje"] = random.choice(["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"])
+        
         data["gostou_dia"] = random.choice(["Sim", "Não"])
         data["comunicou_aluno"] = random.choice(["Sim", "Não"])
         data["incomodado_aluno"] = random.sample(["Barulho alto", "Luz forte", "Pessoas"], random.randint(0, 1))
         data["fez_o_que_queria"] = random.choice(["Sim", "Não", "Um pouco"])
         
-        # --- AJUSTES NO ESTADO EMOCIONAL PARA O NOVO VETOR (FLUTTER) ---
+        # --- ESTADO EMOCIONAL (Estado Emocional) ---
         data["sentimento"] = random.choice(["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"])
         data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho", None])
-        # -----------------------------------------------------------------
+        # ---------------------------------------------
         
         data["dor_fisica"] = random.choice(["Sim", "Não"])
         data["quer_ficar_sozinho"] = random.choice(["Sim", "Não"])
@@ -97,10 +109,13 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         crisis_score = 0
         if data["frequencia_cardiaca_media"] > 120: crisis_score += 2
         if data["nivel_agitacao_media"] > 0.5: crisis_score += 2
-        if data["sentimento_hoje"] == "Bravo": crisis_score += 2
-        # MUDANÇA NA CHAVE AQUI
-        if data["sentimento"] in ["irritado", "ansioso"]: crisis_score += 2 
+        
+        # Verificando as 6 emoções padronizadas
+        if data["sentimento_hoje"] in ["irritado", "triste", "ansioso", "cansado"]: crisis_score += 2
+        if data["sentimento"] in ["irritado", "ansioso", "cansado"]: crisis_score += 2 
+        
         if data["dor_fisica"] == "Sim": crisis_score += 1
+        if data["motivo"] in ["Aula", "Pessoas", "Barulho"]: crisis_score += 1
         if "Barulho alto" in data["incomodado_aluno"]: crisis_score += 1
         if data["humor_aluno_edu"] == "Irritado": crisis_score += 2
         if data["interacao_colegas"] == "Difícil": crisis_score += 2
@@ -119,7 +134,7 @@ def generate_simulated_data(scenario_type: str = "normal") -> dict:
         "idade_aluno": random.randint(12, 18),
         "sexo_aluno": random.choice(["Masculino", "Feminino", "Prefere não informar"]),
         "nivel_tea": random.choice(["Leve", "Moderado", "Severo", "Não sei informar"]),
-        "comunicacao_verbal_resp": random.choice(["Sim, fluentemente", "Sim, com dificuldades", "Não verbal"]),
+        "comunicacao_verbal_resp": random.choice(["Com facilidade", "Com alguma dificuldade", "Não verbalizou"]),
         "interacao_social_escala": random.randint(1, 5),
         "rotina_estruturada": random.choice(["Sim", "Não", "Parcialmente"]),
         "sensibilidades": random.sample(["Sons altos", "Luzes fortes", "Certas texturas", "Cheiros fortes"], random.randint(0, 2)),

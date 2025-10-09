@@ -4,9 +4,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import numpy as np
 
-# Importa as funções de préprocessamento e predição
+# Importa as funções de préprocessamento
 from dados.preprocessamento import preprocessaDados
-from modelo.preditiva import predicaoCrise, probabilidadeCrise
+# As funções de predição (predicaoCrise, probabilidadeCrise) não são mais importadas,
+# pois faremos a chamada diretamente no objeto 'model'.
 
 # Inicializa
 app = FastAPI()
@@ -18,8 +19,7 @@ MODEL_FILE = os.path.join("modelo","model.pkl")
 model = None
 
 # Validação de Dados de Entrada 
-# garante que a API receba os dados no formato correto.
-# O nome e o tipo das chaves devem corresponder ao  dicionário de dados 
+# CLASSE DataInput ATUALIZADA com o campo 'motivo'
 class DataInput(BaseModel):
     frequencia_cardiaca_media: int
     nivel_agitacao_media: float
@@ -37,6 +37,7 @@ class DataInput(BaseModel):
     incomodado_aluno: list
     fez_o_que_queria: str
     estado_emocional_aluno: str
+    motivo: str # NOVO CAMPO OBRIGATÓRIO
     dor_fisica: str
     quer_ficar_sozinho: str
     precisa_ajuda: str
@@ -52,7 +53,6 @@ class DataInput(BaseModel):
     adaptacao_necessaria: str
 
 # Inicialização da Aplicação 
-# Essa função é executada uma única vez quando a API inicia
 @app.on_event("startup")
 async def load_model():
     global model
@@ -69,31 +69,42 @@ def read_root():
     return {"message": "API de Previsão de Crise do EduCare rodando com sucesso!"}
 
 # Rota da API para Predição 
+@app.post("/predict")
 async def predict_crisis_endpoint(data: DataInput):
-
-    #Recebe os dados brutos de um usuário e retorna a probabilidade de crise
 
     if model is None:
         raise HTTPException(status_code=500, detail="O modelo de IA não está carregado.")
 
     try:
-        # Converte o Pydantic model para um dicionário Python
+        # 1. Converte o Pydantic model para um dicionário Python
         raw_data = data.dict()
         
-        # Pré-processa os dados para o formato que a IA entende
+        # 2. Pré-processa os dados. (Retorna uma lista 1D, atribuída a 'processed_data')
         processed_data = preprocessaDados(raw_data)
-        processed_data = np.array(processed_data).reshape(1, -1) #Formato necessário para a predição
-
-        # Faz a predição e calcula a probabilidade
-        prediction = predicaoCrise(processed_data, model)
-        probability = probabilidadeCrise(processed_data, model)
+        
+        # 3. TRANSFORMAÇÃO: Força o achatamento (flatten) e depois o reshape 2D (1 linha, N colunas).
+        data_to_predict = np.array(processed_data).flatten().reshape(1, -1)
+        
+        # LOG DE DIAGNÓSTICO: Verificamos o formato antes de passar para o modelo
+        print(f"DEBUG: Shape do array de predição antes da chamada: {data_to_predict.shape}")
+        
+        # 4. CHAMA O MODELO DIRETAMENTE para evitar a dimensão 3D
+        
+        # Predição (model.predict retorna [[0]] ou [[1]]. O [0] no final pega o valor escalar.)
+        prediction_result = model.predict(data_to_predict)[0]
+        
+        # Probabilidade (model.predict_proba retorna [[prob_classe_0, prob_classe_1]]. O [0][1] pega a probabilidade da classe 1 [crise].)
+        probability_result = model.predict_proba(data_to_predict)[0][1] 
 
         return {
-            "prediction": int(prediction),
-            "probability": float(probability),
-            "is_crisis": bool(prediction)
+            "prediction": int(prediction_result),
+            "probability": float(probability_result),
+            "is_crisis": bool(prediction_result)
         }
     except Exception as e:
+        # Imprime o erro real no console para debug
+        print(f"Erro detalhado no processamento: {e}")
+        # Retorna o erro ao cliente
         raise HTTPException(status_code=400, detail=f"Erro no processamento dos dados: {e}")
 
 # uvicorn api:app --reload   para rodar a api -- cntrl + C

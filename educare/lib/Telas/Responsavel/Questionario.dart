@@ -9,21 +9,61 @@ class Questionario extends StatefulWidget {
 }
 
 class _QuestionarioState extends State<Questionario> {
+  
   final TextEditingController idadeController = TextEditingController();
-  String? sexoSelecionado;
-  String? nivelAutismo;
-  String? comunicacao;
-  int? interacoesSociais;
-  String? rotina;
-  String? frequenciaCrises;
+  String? sexoAluno; // Corresponde a 'sexo_aluno'
+  String? nivelTea; // Corresponde a 'nivel_tea'
+  String? comunicacaoVerbalResp; // Corresponde a 'comunicacao_verbal_resp'
+  int? interacaoSocialEscala; // Corresponde a 'interacao_social_escala'
+  String? rotinaEstruturada; // Corresponde a 'rotina_estruturada'
+  String? frequenciaCrises; // Corresponde a 'frequencia_crises'
 
-  // Agora é um Map para permitir múltiplas seleções:
+  // 2. SENSIBILIDADES CORRIGIDAS (Strings padronizadas para o Python)
   Map<String, bool> sensibilidades = {
     'Sons altos': false,
     'Luzes fortes': false,
-    'Certas texturas (roupas, alimentos)': false,
+    'Certas texturas': false, // Corrigido para "Certas texturas" (removido "(roupas, alimentos)")
     'Cheiros fortes': false,
   };
+
+  // Função fictícia para simular o envio de dados
+  // Você deve substituir este corpo com a lógica real de Supabase/API
+  void _enviarDados() {
+    // 3. Monta o mapa de dados com as chaves exatas que o preprocessaDados.py espera
+    final List<String> sensibilidadesSelecionadas = sensibilidades.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    final Map<String, dynamic> dadosResponsavel = {
+      // Campos numéricos e strings simples
+      'idade_aluno': int.tryParse(idadeController.text) ?? 0,
+      'sexo_aluno': sexoAluno,
+      'nivel_tea': nivelTea,
+      'comunicacao_verbal_resp': comunicacaoVerbalResp,
+      'interacao_social_escala': interacaoSocialEscala,
+      'rotina_estruturada': rotinaEstruturada,
+      'frequencia_crises': frequenciaCrises,
+      
+      // Lista de sensibilidades (para processamento como one-hot encoding no Python)
+      'sensibilidades': sensibilidadesSelecionadas,
+      
+      // Campos fictícios que são preenchidos por outros questionários,
+      // mas que são necessários para a IA (caso este seja o único dado enviado)
+      // *Remova estas chaves se você for juntar os dados de todos os questionários antes de enviar*
+      //'frequencia_cardiaca_media': 0, // Exemplo
+      //'nivel_agitacao_media': 0.0,    // Exemplo
+    };
+
+    // Aqui você faria o POST para a API ou INSERT no Supabase
+    print("Dados do Responsável prontos para envio (JSON): $dadosResponsavel");
+
+    // Navegação após "envio"
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const InicioResponsavel()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,37 +87,41 @@ class _QuestionarioState extends State<Questionario> {
             const Divider(height: 32),
 
             _cardSecao([
-              _radioGroup('Sexo:', ['Masculino', 'Feminino', 'Prefere não informar'], sexoSelecionado,
-                  (val) => setState(() => sexoSelecionado = val)),
+              _radioGroup('Sexo:', ['Masculino', 'Feminino', 'Prefere não informar'], sexoAluno,
+                  (val) => setState(() => sexoAluno = val)),
             ]),
             const Divider(height: 32),
 
             _cardSecao([
-              _radioGroup('Nível do espectro autista (se souber):', ['Leve', 'Moderado', 'Severo'], nivelAutismo,
-                  (val) => setState(() => nivelAutismo = val)),
+              // Chave: 'nivel_tea'
+              _radioGroup('Nível do espectro autista (se souber):', ['Leve', 'Moderado', 'Severo', 'Não sei informar'], nivelTea,
+                  (val) => setState(() => nivelTea = val)),
             ]),
             const Divider(height: 32),
 
             _cardSecao([
+              // Chave: 'comunicacao_verbal_resp'
               _radioGroup('A criança se comunica verbalmente?',
-                  ['Sim, fluentemente', 'Sim, com dificuldades', 'Não verbal'], comunicacao,
-                  (val) => setState(() => comunicacao = val)),
+                  ['Com facilidade', 'Com alguma dificuldade', 'Não verbalizou'], comunicacaoVerbalResp, // Opções de mapeamento Python
+                  (val) => setState(() => comunicacaoVerbalResp = val)),
             ]),
             const Divider(height: 32),
 
             _cardSecao([
+              // Chave: 'interacao_social_escala'
               _radioGroup(
                 'Como a criança lida com interações sociais?\n(1 = Evita completamente / 5 = Busca constantemente)',
                 ['1', '2', '3', '4', '5'],
-                interacoesSociais?.toString(),
-                (val) => setState(() => interacoesSociais = int.parse(val)),
+                interacaoSocialEscala?.toString(),
+                (val) => setState(() => interacaoSocialEscala = int.parse(val)),
               ),
             ]),
             const Divider(height: 32),
 
             _cardSecao([
-              _radioGroup('A criança segue uma rotina diária estruturada?', ['Sim', 'Não', 'Parcialmente'], rotina,
-                  (val) => setState(() => rotina = val)),
+              // Chave: 'rotina_estruturada'
+              _radioGroup('A criança segue uma rotina diária estruturada?', ['Sim', 'Não', 'Parcialmente'], rotinaEstruturada,
+                  (val) => setState(() => rotinaEstruturada = val)),
             ]),
             const Divider(height: 32),
 
@@ -99,6 +143,7 @@ class _QuestionarioState extends State<Questionario> {
             const Divider(height: 32),
 
             _cardSecao([
+              // Chave: 'frequencia_crises'
               _radioGroup('Com que frequência ocorrem crises?', [
                 'Raramente',
                 'Algumas vezes por semana',
@@ -109,13 +154,8 @@ class _QuestionarioState extends State<Questionario> {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Aqui você pode salvar os dados, enviar para backend, etc.
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const InicioResponsavel()),
-                  );
-                },
+                // 4. CHAMANDO A FUNÇÃO DE ENVIO
+                onPressed: _enviarDados, 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightBlue[400],
                   foregroundColor: Colors.white,
@@ -186,3 +226,4 @@ class _QuestionarioState extends State<Questionario> {
     );
   }
 }
+
