@@ -1,151 +1,109 @@
 import random
-import numpy as np
+import pandas as pd
+from typing import List, Dict, Any
 
-# Função que gera uma única amostra de dados fictícios para treinamento
-def generate_simulated_data(scenario_type: str = "normal") -> dict:
+# Define a quantidade de amostras a serem geradas
+NUM_SAMPLES = 5000 
+CRISIS_SAMPLES = 500  # Quantidade de amostras forçadas como 'Crise' (10%)
 
-    data = {}
-
-    # Lógica para cenários de treinamento bem definidos 
-    if scenario_type == "normal":
-        data["frequencia_cardiaca_media"] = random.randint(60, 90)
-        data["nivel_agitacao_media"] = random.uniform(0.0, 0.2)
-        
-        # Emoções Diárias (Ajustado para as 6 emoções em minúsculas)
-        data["sentimento_hoje"] = random.choice(["feliz", "neutro"]) 
-        
-        data["gostou_dia"] = "Sim"
-        data["comunicou_aluno"] = random.choice(["Sim", "Não"])
-        data["incomodado_aluno"] = []
-        data["fez_o_que_queria"] = "Sim"
-        
-        # --- ESTADO EMOCIONAL (Estado Emocional) ---
-        data["sentimento"] = random.choice(["feliz", "neutro"]) # Chave 'sentimento' para a segunda emoção
-        data["motivo"] = None # Sem motivo de incômodo em cenário normal
-        # ---------------------------------------------
-        
-        data["dor_fisica"] = "Não"
-        data["quer_ficar_sozinho"] = "Não"
-        data["precisa_ajuda"] = "Não"
-        data["humor_aluno_edu"] = random.choice(["Feliz", "Neutro"])
-        data["participacao_atividades"] = "Sim"
-        data["interacao_colegas"] = random.choice(["Excelente", "Boa"])
-        data["crise_ocorrida_edu"] = "Não"
-        data["comunicacao_verbal_edu"] = "Com facilidade"
-        data["avaliacao_semanal_edu"] = random.choice(["Muito bom", "Bom"])
-        data["evolucao_observada"] = random.sample(["Comunicação verbal", "Socialização", "Atenção/concentração", "Autonomia (fazer tarefas sozinho)"], random.randint(1, 2))
-        data["retrocesso_edu"] = "Não"
-        data["lidou_mudanca_rotina"] = random.choice(["Muito bem", "Bem"])
-        data["adaptacao_necessaria"] = "Não"
-        data["is_crisis"] = 0
-        
-    elif scenario_type == "crise":
-        data["frequencia_cardiaca_media"] = random.randint(130, 170)
-        data["nivel_agitacao_media"] = random.uniform(0.7, 1.0)
-        
-        # Emoções Diárias (Ajustado para as 6 emoções em minúsculas)
-        data["sentimento_hoje"] = random.choice(["irritado", "triste", "ansioso", "cansado"])
-        
-        data["gostou_dia"] = "Não"
-        data["comunicou_aluno"] = random.choice(["Sim", "Não"])
-        data["incomodado_aluno"] = random.sample(["Barulho alto", "Pessoas", "Luz forte"], random.randint(1, 3))
-        data["fez_o_que_queria"] = "Não"
-        
-        # --- ESTADO EMOCIONAL (Estado Emocional) ---
-        # Novas emoções de stress e campo 'motivo' preenchido
-        data["sentimento"] = random.choice(["irritado", "ansioso", "triste", "cansado"]) 
-        data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho"]) # Incômodo presente
-        # ---------------------------------------------
-        
-        data["dor_fisica"] = random.choice(["Sim", "Não"])
-        data["quer_ficar_sozinho"] = "Sim"
-        data["precisa_ajuda"] = "Sim"
-        data["humor_aluno_edu"] = random.choice(["Triste", "Irritado"])
-        data["participacao_atividades"] = "Não"
-        data["interacao_colegas"] = random.choice(["Regular", "Difícil"])
-        data["crise_ocorrida_edu"] = "Sim"
-        data["comunicacao_verbal_edu"] = random.choice(["Não verbalizou", "Com alguma dificuldade"])
-        data["avaliacao_semanal_edu"] = "Difícil"
-        data["evolucao_observada"] = []
-        data["retrocesso_edu"] = "Sim"
-        data["lidou_mudanca_rotina"] = random.choice(["Com grande dificuldade", "Com grande dificuldade"])
-        data["adaptacao_necessaria"] = "Sim"
-        data["is_crisis"] = 1
+def generate_sample_data(num_samples: int) -> List[Dict[str, Any]]:
+    """Gera dados simulados para treinamento, contendo apenas Aluno e Responsável (19 campos)."""
     
-    # Lógica para cenários mistos/limítrofes (casos de borda)
-    else: # scenario_type == "misto"
-        # Gerar dados completamente aleatórios
-        data["frequencia_cardiaca_media"] = random.randint(60, 140)
-        data["nivel_agitacao_media"] = random.uniform(0, 1)
-        
-        # Emoções Diárias
-        data["sentimento_hoje"] = random.choice(["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"])
-        
-        data["gostou_dia"] = random.choice(["Sim", "Não"])
-        data["comunicou_aluno"] = random.choice(["Sim", "Não"])
-        data["incomodado_aluno"] = random.sample(["Barulho alto", "Luz forte", "Pessoas"], random.randint(0, 1))
-        data["fez_o_que_queria"] = random.choice(["Sim", "Não", "Um pouco"])
-        
-        # --- ESTADO EMOCIONAL (Estado Emocional) ---
-        data["sentimento"] = random.choice(["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"])
-        data["motivo"] = random.choice(["Aula", "Pessoas", "Barulho", None])
-        # ---------------------------------------------
-        
-        data["dor_fisica"] = random.choice(["Sim", "Não"])
-        data["quer_ficar_sozinho"] = random.choice(["Sim", "Não"])
-        data["precisa_ajuda"] = random.choice(["Sim", "Não"])
-        data["humor_aluno_edu"] = random.choice(["Feliz", "Neutro", "Triste", "Irritado"])
-        data["participacao_atividades"] = random.choice(["Sim", "Não", "Parcialmente"])
-        data["interacao_colegas"] = random.choice(["Excelente", "Boa", "Regular", "Difícil"])
-        data["crise_ocorrida_edu"] = random.choice(["Sim", "Não"])
-        data["comunicacao_verbal_edu"] = random.choice(["Com facilidade", "Com alguma dificuldade", "Não verbalizou"])
-        data["avaliacao_semanal_edu"] = random.choice(["Muito bom", "Bom", "Regular", "Difícil"])
-        data["evolucao_observada"] = random.sample(["Comunicação verbal", "Socialização", "Atenção/concentração", "Autonomia (fazer tarefas sozinho)"], random.randint(0, 2))
-        data["retrocesso_edu"] = random.choice(["Sim", "Não"])
-        data["lidou_mudanca_rotina"] = random.choice(["Muito bem", "Bem", "Com alguma dificuldade", "Com grande dificuldade"])
-        data["adaptacao_necessaria"] = random.choice(["Sim", "Não"])
+    data = []
 
-        # Aplicar lógica de pontuação para determinar 'is_crisis' no cenário misto
-        crisis_score = 0
-        if data["frequencia_cardiaca_media"] > 120: crisis_score += 2
-        if data["nivel_agitacao_media"] > 0.5: crisis_score += 2
-        
-        # Verificando as 6 emoções padronizadas
-        if data["sentimento_hoje"] in ["irritado", "triste", "ansioso", "cansado"]: crisis_score += 2
-        if data["sentimento"] in ["irritado", "ansioso", "cansado"]: crisis_score += 2 
-        
-        if data["dor_fisica"] == "Sim": crisis_score += 1
-        if data["motivo"] in ["Aula", "Pessoas", "Barulho"]: crisis_score += 1
-        if "Barulho alto" in data["incomodado_aluno"]: crisis_score += 1
-        if data["humor_aluno_edu"] == "Irritado": crisis_score += 2
-        if data["interacao_colegas"] == "Difícil": crisis_score += 2
-        if data["retrocesso_edu"] == "Sim": crisis_score += 3
-        if data["lidou_mudanca_rotina"] == "Com grande dificuldade": crisis_score += 2
-        
-        if data["crise_ocorrida_edu"] == "Sim":
-            data["is_crisis"] = 1
-        elif crisis_score >= 5:
-            data["is_crisis"] = 1
-        else:
-            data["is_crisis"] = 0
+    # Domínios de Dados (Alinhados com o preprocessamento.py e em minúsculas para robustez)
+    SEXO_OPTIONS = ["masculino", "feminino", "prefere não informar"]
+    NIVEL_TEA_OPTIONS = ["leve", "moderado", "severo", "não sei informar"]
+    COMUN_VERBAL_RESP_OPTIONS = ["com facilidade", "com alguma dificuldade", "não verbalizou"]
+    CRISES_FREQ_OPTIONS = ["raramente", "algumas vezes por semana", "diariamente"]
+    ROTINA_OPTIONS = ["sim", "parcialmente", "não"]
 
-    # Lógica de preenchimento para campos que não foram definidos nos cenários
-    default_values = {
-        "idade_aluno": random.randint(12, 18),
-        "sexo_aluno": random.choice(["Masculino", "Feminino", "Prefere não informar"]),
-        "nivel_tea": random.choice(["Leve", "Moderado", "Severo", "Não sei informar"]),
-        "comunicacao_verbal_resp": random.choice(["Com facilidade", "Com alguma dificuldade", "Não verbalizou"]),
-        "interacao_social_escala": random.randint(1, 5),
-        "rotina_estruturada": random.choice(["Sim", "Não", "Parcialmente"]),
-        "sensibilidades": random.sample(["Sons altos", "Luzes fortes", "Certas texturas", "Cheiros fortes"], random.randint(0, 2)),
-        "frequencia_crises": random.choice(["Raramente", "Algumas vezes por semana", "Diariamente"])
-    }
-    for key, value in default_values.items():
-        if key not in data:
-            data[key] = value
+    SENTIMENTO_OPTIONS = ["feliz", "neutro", "triste", "irritado", "ansioso", "cansado"]
+    SIM_NAO_OPTIONS = ["sim", "não"]
+    SIM_NAO_POUCO_OPTIONS = ["sim", "não", "um pouco"]
+    MOTIVO_OPTIONS = ["aula", "pessoas", "barulho", "nenhum"]
+    
+    SENSIBILIDADES_LIST = ["sons altos", "luzes fortes", "certas texturas", "cheiros fortes"]
+    INCOMODADOS_LIST = ["barulho alto", "muitas pessoas"]
 
-    # GARANTINDO QUE A CHAVE ANTIGA NÃO CAUSE ERRO no preprocessaDados
-    if "estado_emocional_aluno" in data:
-        del data["estado_emocional_aluno"] 
+
+    for i in range(num_samples):
+        # ----------------------------------------------------
+        # 1. Variável de Saída (Target)
+        # ----------------------------------------------------
+        # Força uma proporção de crises para garantir o treinamento
+        is_crisis = 1 if i < CRISIS_SAMPLES or random.random() < 0.1 else 0
+
+        # ----------------------------------------------------
+        # 2. Dados Fisiológicos/Numéricos
+        # ----------------------------------------------------
+        freq_card = random.randint(70, 100)
+        nivel_agit = random.uniform(0.1, 0.4)
+        
+        # Aumenta os sinais se for crise
+        if is_crisis:
+            freq_card = random.randint(110, 140)
+            nivel_agit = random.uniform(0.7, 1.0)
+        
+        sample = {
+            # Fisiológicos
+            "frequencia_cardiaca_media": freq_card,
+            "nivel_agitacao_media": nivel_agit,
+            
+            # ----------------------------------------------------
+            # 3. Dados do Responsável (Histórico)
+            # ----------------------------------------------------
+            "idade_aluno": random.randint(5, 18),
+            "sexo_aluno": random.choice(SEXO_OPTIONS),
+            "nivel_tea": random.choice(NIVEL_TEA_OPTIONS),
+            "comunicacao_verbal_resp": random.choice(COMUN_VERBAL_RESP_OPTIONS),
+            "interacao_social_escala": random.randint(1, 5), # 1 a 5
+            "frequencia_crises": random.choice(CRISES_FREQ_OPTIONS),
+            "rotina_estruturada": random.choice(ROTINA_OPTIONS),
+
+            # Sensibilidades
+            "sensibilidades": random.sample(SENSIBILIDADES_LIST, k=random.randint(0, len(SENSIBILIDADES_LIST))),
+
+            # ----------------------------------------------------
+            # 4. Dados do Aluno (Diário/Emocional)
+            # ----------------------------------------------------
+            "sentimento_hoje": random.choice(SENTIMENTO_OPTIONS),
+            "gostou_dia": random.choice(SIM_NAO_OPTIONS),
+            "comunicou_aluno": random.choice(SIM_NAO_OPTIONS),
+            "fez_o_que_queria": random.choice(SIM_NAO_POUCO_OPTIONS),
+            "estado_emocional_aluno": random.choice(SENTIMENTO_OPTIONS), # Corrigido para corresponder ao preprocessamento
+            "motivo": random.choice(MOTIVO_OPTIONS),
+            "dor_fisica": random.choice(SIM_NAO_OPTIONS),
+            "quer_ficar_sozinho": random.choice(SIM_NAO_OPTIONS),
+            "precisa_ajuda": random.choice(SIM_NAO_OPTIONS),
+            "incomodado_aluno": random.sample(INCOMODADOS_LIST, k=random.randint(0, len(INCOMODADOS_LIST))),
+            
+            # Target
+            "target": is_crisis
+        }
+        
+        # Ajusta campos para cenários de crise (Aumenta estressores e piora emoções)
+        if is_crisis:
+            sample["sentimento_hoje"] = random.choice(["triste", "irritado", "ansioso", "cansado"])
+            sample["estado_emocional_aluno"] = random.choice(["triste", "irritado", "ansioso", "cansado"])
+            sample["dor_fisica"] = "sim" if random.random() < 0.8 else "não"
+            sample["quer_ficar_sozinho"] = "sim" if random.random() < 0.7 else "não"
+            if random.random() < 0.6:
+                 sample["incomodado_aluno"] = INCOMODADOS_LIST 
+                 
+        data.append(sample)
 
     return data
+
+def create_simulated_dataset() -> pd.DataFrame:
+    """Cria o DataFrame final simulado."""
+    data = generate_sample_data(NUM_SAMPLES)
+    df = pd.DataFrame(data)
+    
+    # Adiciona 500 amostras extras para garantir que o total seja 5500
+    extra_data = generate_sample_data(500)
+    df_extra = pd.DataFrame(extra_data)
+    
+    df = pd.concat([df, df_extra], ignore_index=True)
+
+    return df
