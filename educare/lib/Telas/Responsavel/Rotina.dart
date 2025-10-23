@@ -61,7 +61,9 @@ class _RotinaState extends State<Rotina> {
         alunos = listaAlunos;
       });
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao carregar alunos: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao carregar alunos')),
       );
@@ -86,6 +88,14 @@ class _RotinaState extends State<Rotina> {
     if (alunoSelecionadoId == null) return;
     final userId = supabase.auth.currentUser?.id;
 
+    if (tituloController.text.isEmpty || horarioController.text.isEmpty || tarefaController.text.isEmpty) {
+       // ignore: use_build_context_synchronously
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos para adicionar a tarefa!')),
+      );
+      return;
+    }
+
     await supabase.from('rotina').insert({
       'id_aluno': alunoSelecionadoId,
       'titulo': tituloController.text,
@@ -94,40 +104,70 @@ class _RotinaState extends State<Rotina> {
       'id_criador': userId,
     });
 
+    tituloController.clear();
     horarioController.clear();
     tarefaController.clear();
 
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus(); // Fecha o teclado
+    
     await carregarTarefas(alunoSelecionadoId!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue[100], // Fundo padrão do app
       appBar: AppBar(
-        title: const Text('Rotina'),
+        // Refinamento: Título e ícone de voltar em branco
+        title: const Center( 
+          child: Text(
+            'ROTINA DO ALUNO', 
+            style: TextStyle(color: Colors.white)
+          )
+        ),
+        centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
+        iconTheme: const IconThemeData(color: Colors.white), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Dropdown de alunos
-            DropdownButton<String>(
-              value: alunoSelecionadoId,
-              hint: const Text("Selecione um aluno"),
-              isExpanded: true,
-              items: alunos.map<DropdownMenuItem<String>>((aluno) {
-                return DropdownMenuItem<String>(
-                  value: aluno['id'] as String,
-                  child: Text(aluno['nome']),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  alunoSelecionadoId = value;
-                });
-                if (value != null) carregarTarefas(value);
-              },
+            // Dropdown de alunos (Estilizado)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.lightBlue, width: 2),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: alunoSelecionadoId,
+                  hint: const Text(
+                    "Selecione um aluno",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  isExpanded: true,
+                  icon: const Icon(Icons.arrow_downward, color: Colors.lightBlue),
+                  items: alunos.map<DropdownMenuItem<String>>((aluno) {
+                    return DropdownMenuItem<String>(
+                      value: aluno['id'] as String,
+                      child: Text(
+                        aluno['nome'],
+                        style: const TextStyle(color: Colors.black87),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      alunoSelecionadoId = value;
+                    });
+                    if (value != null) carregarTarefas(value);
+                  },
+                ),
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -135,15 +175,41 @@ class _RotinaState extends State<Rotina> {
             // Lista de tarefas
             Expanded(
               child: tarefas.isEmpty
-                  ? const Center(child: Text("Nenhuma tarefa encontrada"))
+                  ? Center(
+                      child: Text(
+                        alunoSelecionadoId == null 
+                          ? "Selecione um aluno para ver as tarefas."
+                          : "Nenhuma tarefa encontrada para este aluno.",
+                        style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: tarefas.length,
                       itemBuilder: (context, index) {
                         final tarefa = tarefas[index];
+                        final Color cardColor = index % 2 == 0 
+                          ? Colors.white // Branco
+                          : const Color.fromARGB(255, 230, 245, 255); // Azul claro
+                          
                         return Card(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          color: cardColor,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           child: ListTile(
-                            title: Text(tarefa['titulo']),
-                            subtitle: Text("Descrição: ${tarefa['descricao']} Horário: ${tarefa['data_hora']}"),
+                            leading: Icon(Icons.check_circle_outline, color: Colors.green[400]),
+                            title: Text(
+                              tarefa['titulo'] ?? 'Sem Título', 
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)
+                            ),
+                            subtitle: Text(
+                              "${tarefa['data_hora']} - ${tarefa['descricao'] ?? 'Sem descrição'}",
+                              style: const TextStyle(color: Colors.black54),
+                            ),
+                            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                            onTap: () {
+                              // Adicionar navegação para detalhes ou edição da tarefa aqui, se for necessário
+                            },
                           ),
                         );
                       },
@@ -152,25 +218,59 @@ class _RotinaState extends State<Rotina> {
 
             const SizedBox(height: 10),
 
-            // Campos para adicionar tarefa
-            TextField(
-              controller: tituloController,
-              decoration: const InputDecoration(labelText: 'Titulo:'),
-            ),
-            TextField(
-              controller: horarioController,
-              decoration: const InputDecoration(labelText: 'Horário:'),
-            ),
-            TextField(
-              controller: tarefaController,
-              decoration: const InputDecoration(labelText: 'Descrição da Tarefa:'),
-            ),
+            // Campos para adicionar tarefa (Com estilo Input padronizado)
+            _buildStyledTextField(tituloController, 'Título:'),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: adicionarTarefa,
-              child: const Text('Adicionar Tarefa'),
+            _buildStyledTextField(horarioController, 'Horário: (Ex: 10:00)'),
+            const SizedBox(height: 10),
+            _buildStyledTextField(tarefaController, 'Descrição da Tarefa:', maxLines: 2),
+            const SizedBox(height: 20),
+            
+            // Botão Adicionar Tarefa (Estilizado)
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: adicionarTarefa,
+                icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                label: const Text(
+                  'ADICIONAR TAREFA',
+                  style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 61, 178, 217), // Cor padrão do app
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                ),
+              ),
             ),
+             const SizedBox(height: 10)
           ],
+        ),
+      ),
+    );
+  }
+
+  // Novo Widget para TextField estilizado
+  Widget _buildStyledTextField(TextEditingController controller, String label, {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: const TextStyle(color: Colors.black87), // Cor do texto digitado
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.lightBlue[700]),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.lightBlue, width: 2),
         ),
       ),
     );

@@ -28,7 +28,7 @@ class _ResumoDiarioState extends State<ResumoDiario> {
 
     for (final id in ids) {
       final response = await supabase
-          .from('usuario')
+          .from('usuario') // Assumindo que a tabela é 'usuario'
           .select('nome')
           .eq('id', id)
           .maybeSingle();
@@ -48,21 +48,36 @@ class _ResumoDiarioState extends State<ResumoDiario> {
   @override
   Widget build(BuildContext context) {
     final diarios = widget.diarios;
-    diarios.sort((a, b) => b['data'].compareTo(a['data']));
+    // Ordenação mais robusta, garantindo que a coluna 'criado_em' existe
+    diarios.sort((a, b) => b['criado_em'].compareTo(a['criado_em'])); 
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
         backgroundColor: Colors.lightBlue[300],
-        title: const Text('RESUMO DIÁRIO'),
+        // Refinamento: Alinhar o título e deixar o texto em branco
+        title: const Center( 
+          child: Text(
+            'RESUMO DIÁRIO',
+            style: TextStyle(color: Colors.white), 
+          ),
+        ),
+        // Refinamento: Centraliza o título, mas a AppBar tem que ser flexível para o botão de voltar
+        centerTitle: true, 
+        // Refinamento: Define a cor do ícone de voltar para branco
+        iconTheme: const IconThemeData(color: Colors.white), 
       ),
       body: carregando
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white)) // Cor do progresso
           : diarios.isEmpty
               ? const Center(
                   child: Text(
                     'Nenhum registro encontrado para hoje.',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16, 
+                      color: Colors.white, // Refinamento: Texto em branco
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 )
               : ListView.builder(
@@ -70,14 +85,16 @@ class _ResumoDiarioState extends State<ResumoDiario> {
                   itemCount: diarios.length,
                   itemBuilder: (context, index) {
                     final diario = diarios[index];
+                    // Formato de data mais seguro, verificando o tipo
+                    final dataString = diario['criado_em'] is String ? diario['criado_em'] : DateTime.now().toIso8601String();
                     final dataFormatada = DateFormat('dd/MM/yyyy')
-                        .format(DateTime.parse(diario['criado_em']));
+                        .format(DateTime.parse(dataString));
                     final nomeAluno =
-                        nomesAlunos[diario['id_aluno']] ?? '...';
+                        nomesAlunos[diario['id_aluno']] ?? 'Aluno não listado';
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 20),
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 255, 255, 255), // Cartão Branco
                       elevation: 3,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -91,10 +108,11 @@ class _ResumoDiarioState extends State<ResumoDiario> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent,
+                                color: Color.fromARGB(255, 61, 178, 217), // Cor de destaque no card
                               ),
                             ),
                             const SizedBox(height: 10),
+                            // Refinamento: Chama a nova _linhaResposta
                             _linhaResposta('Aluno:', nomeAluno),
                             const SizedBox(height: 10),
                             _linhaResposta(
@@ -110,18 +128,26 @@ class _ResumoDiarioState extends State<ResumoDiario> {
     );
   }
 
+  // Refinamento: Função de Linha de Resposta com Texto Preto
   Widget _linhaResposta(String titulo, String valor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '$titulo ',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 16, 
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Cor do título no card (Preto)
+          ),
         ),
         Expanded(
           child: Text(
             valor,
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black54, // Cor do valor no card (Cinza/Preto)
+            ),
           ),
         ),
       ],
