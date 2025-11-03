@@ -16,7 +16,7 @@ class _AlunosState extends State<Alunos> {
   Future<List<Map<String, dynamic>>> carregarAlunos() async {
     final userId = supabase.auth.currentUser!.id;
 
-    // 1. Buscar as turmas do professor
+  
     final turmasResponse = await supabase
         .from('professor_turma')
         .select()
@@ -27,17 +27,17 @@ class _AlunosState extends State<Alunos> {
     for (final item in turmasResponse) {
       final idTurma = item['id_turma'];
 
-      // 2. Buscar alunos da turma
+      
       final alunosResponse =
           await supabase.from('aluno').select().eq('id_turma', idTurma);
 
       for (final aluno in alunosResponse) {
-        // 3. Buscar nome da turma
+       
         final turmaResponse = await supabase
             .from('turma')
             .select()
             .eq('id', idTurma)
-            .single(); // Pega apenas o primeiro
+            .single(); 
 
         final nomeTurma = turmaResponse['nome'];
 
@@ -48,6 +48,7 @@ class _AlunosState extends State<Alunos> {
             .single();
 
         listaAlunos.add({
+          'id': aluno['id'], // Adicionando o ID do aluno
           'nome': nomeAluno['nome'],
           'escola': turmaResponse['escola'],
           'turma': nomeTurma,
@@ -86,20 +87,24 @@ class _AlunosState extends State<Alunos> {
           return ListView.builder(
             itemCount: listaAlunos.length,
             itemBuilder: (context, index) {
+              final alunoData = listaAlunos[index];
+
               return Padding(
-                padding: const EdgeInsets.all(8.0), // ajuste o valor como quiser
+                padding: const EdgeInsets.all(8.0), 
                 child: Card(
                   child: ListTile(
-                    title: Text(listaAlunos[index]['nome'] ?? ''),
+                    title: Text(alunoData['nome'] ?? ''),
                     subtitle: Text(
-                        'Colégio: ${listaAlunos[index]['escola']}\nTurma: ${listaAlunos[index]['turma'] ?? ''}'),
+                        'Colégio: ${alunoData['escola']}\nTurma: ${alunoData['turma'] ?? ''}'),
                     onTap: () {
+                      // Passando o ID do aluno para a tela de Detalhes
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetalhesAluno(
-                            nomeAluno: listaAlunos[index]['nome'] ?? 'Sem nome',
-                            turmaAluno: listaAlunos[index]['turma'] ?? 'Sem turma',
+                            nomeAluno: alunoData['nome'] ?? 'Sem nome',
+                            turmaAluno: alunoData['turma'] ?? 'Sem turma',
+                            idAluno: alunoData['id'] ?? '', // Passa o ID
                           ),
                         ),
                       );
@@ -109,7 +114,6 @@ class _AlunosState extends State<Alunos> {
               );
             },
           );
-
         },
       ),
       floatingActionButton: FloatingActionButton(
