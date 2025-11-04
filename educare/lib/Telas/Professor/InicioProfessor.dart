@@ -1,5 +1,5 @@
 import 'package:educare/Telas/Professor/AdminTurmas.dart';
-import 'package:educare/Telas/Professor/TurmaDetalhe.dart';
+// import 'package:educare/Telas/Professor/TurmaDetalhe.dart'; // Não usado no código, mantido o import
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '/Telas/Login.dart';
@@ -16,29 +16,168 @@ class InicioProfessor extends StatefulWidget {
 }
 
 class InicioProfessorState extends State<InicioProfessor> {
+  
+  // Função que mostra o pop-up de sair (reutilizada)
+  void _mostrarDialogoSair() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação'),
+          content: const Text('Tem certeza de que deseja sair da sua conta?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(), 
+            ),
+            TextButton(
+              child: const Text('Sair', style: TextStyle(color: Colors.red)),
+              onPressed: () async {
+                Navigator.of(context).pop(); 
+                await Supabase.instance.client.auth.signOut();
+                if (mounted) { 
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Login()),
+                      (Route<dynamic> route) => false,
+                    );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
+  // --- Novo Widget para Botão em Grade ---
+  Widget _buildGridButton({
+    required double width,
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return SizedBox(
+      width: width,
+      height: width, // Torna o botão quadrado
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          alignment: Alignment.center,
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.all(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              icon,
+              size: width * 0.4, // Tamanho do ícone responsivo
+              color: Colors.white,
+            ),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  
+  Widget _buildWelcomeCard() {
+   
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3), 
+          ),
+        ],
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Olá Professor(a)!",  
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF009ADA),
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            "Gerencie suas turmas e alunos que precisam de apoio.",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Calculamos a largura da tela para os botões de grade (2x2)
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = (screenWidth - 45) / 2; // 30 (padding) + 15 (spacing)
 
     return Scaffold(
-
       backgroundColor: Colors.lightBlue[100],
 
-      appBar: AppBar(  title: const Align(alignment: Alignment.centerLeft, child: Text('Início'), ),
+      appBar: AppBar(
+        // Refinamento: Título e ícone de voltar em branco e centralizado
+        title: const Center(
+          child: Text(
+            'INÍCIO', 
+            style: TextStyle(color: Colors.white)
+          )
+        ),
+        centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
+        iconTheme: const IconThemeData(color: Colors.white), // Ícone do menu branco
       ),
       drawer: Drawer(
-
         child: ListView(
-
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader( // Header ajustado para o alinhamento da esquerda
+              margin: const EdgeInsets.all(0),
+              decoration: const BoxDecoration(
                 color: Colors.lightBlue,
               ),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+              padding: const EdgeInsets.only(top: 10, left: 15),
+              child: const Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
               ),
             ),
             ListTile(
@@ -46,88 +185,98 @@ class InicioProfessorState extends State<InicioProfessor> {
               title: const Text('Editar Dados'),
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EditarDadosProfessor() ),
-              );
-              },
-            ),
-                        ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Sair'),
-              onTap: () async {
-                await Supabase.instance.client.auth.signOut();
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Login()),
-                  (Route<dynamic> route) => false, // remove todas as rotas anteriores
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditarDadosProfessor()),
                 );
               },
             ),
-            
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Sair'),
+              onTap: _mostrarDialogoSair, // Chama o pop-up
+            ),
           ],
         ),
       ),
-     body: Padding(
-  padding: const EdgeInsets.all(20),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
+     body: SingleChildScrollView(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cartão de Boas-Vindas (Reutilizado)
+            _buildWelcomeCard(),
+            const SizedBox(height: 25),       
 
-      const SizedBox(height: 50),
-            botaoPadrao('ALUNOS', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Alunos()),
-              );
-            }),
-  
-     const SizedBox(height: 50),
-            botaoPadrao('NOTIFICAÇÕES', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
-              );
-            }),
-
-      const SizedBox(height: 50),
-            botaoPadrao('CONTATOS', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ContatosProfessor()),
-              );
-            }),
-
-      const SizedBox(height: 50),
-            botaoPadrao('TURMAS', () {
-              final id = Supabase.instance.client.auth.currentUser?.id;
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AdminTurmas(idProfessor: id!)),
-              );
-            }),
-      ],
-     ),
-    )
-    );
-  } 
-
-  Widget botaoPadrao(String texto, VoidCallback onPressed) {
-    return SizedBox(
-      width: double.infinity, 
-      height: 60, 
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue[300],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        child: Text(
-          texto,
-          style: const TextStyle(fontSize: 20),
+            // Layout de Grade (2x2)
+            Wrap(
+              spacing: 15, // Espaço horizontal entre os botões
+              runSpacing: 15, // Espaço vertical entre as linhas
+              children: [
+                // 1. ALUNOS
+                _buildGridButton(
+                  width: buttonWidth,
+                  title: 'Alunos',
+                  icon: Icons.group_outlined, // Ícone de grupo/alunos
+                  color: const Color.fromARGB(255, 61, 178, 217), // Cor Padrão 1
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Alunos()),
+                    );
+                  },
+                ),
+                
+                // 2. NOTIFICAÇÕES (ALERTAS DE CRISE)
+                _buildGridButton(
+                  width: buttonWidth,
+                  title: 'Alertas',
+                  icon: Icons.notifications_active_outlined, // Ícone de alerta
+                  color: const Color.fromARGB(255, 245, 66, 66), // Cor Vermelha para Alerta
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificacoesProfessor()),
+                    );
+                  },
+                ),
+                
+                // 3. CONTATOS
+                _buildGridButton(
+                  width: buttonWidth,
+                  title: 'Contatos',
+                  icon: Icons.people_alt_outlined, // Ícone de contato
+                  color: const Color.fromARGB(255, 255, 226, 61), // Cor Padrão 2
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ContatosProfessor()),
+                    );
+                  },
+                ),
+                
+                // 4. TURMAS
+                _buildGridButton(
+                  width: buttonWidth,
+                  title: 'Turmas',
+                  icon: Icons.class_outlined, // Ícone de turma/escola
+                  color: const Color.fromARGB(255, 85, 158, 88), // Cor Padrão 3
+                  onTap: () {
+                    final id = Supabase.instance.client.auth.currentUser?.id;
+                    if (id != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AdminTurmas(idProfessor: id)),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20), // Espaço no final
+          ],
         ),
       ),
     );
-  }
+  } 
+  // O widget botaoPadrao foi removido, pois foi substituído pelo _buildGridButton
 }
-
