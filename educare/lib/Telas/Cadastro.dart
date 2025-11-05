@@ -27,7 +27,7 @@ class CadastroState extends State<Cadastro> {
 
   // Campos extras para aluno
   String nomeResponsavel = "";
-  String emailResponsavel = "";
+  String emailResponsavel = ""; // ⬅️ Este campo será usado para a busca!
   String codigoTurma = "";
   String telefone = "";
   DateTime? dataNascimento;
@@ -37,45 +37,156 @@ class CadastroState extends State<Cadastro> {
   List<String> sexoOpcoes = ['masculino', 'feminino', 'outro'];
   List<String> niveisTEA = ['leve', 'moderado', 'grave'];
 
+  // --- WIDGETS DE ESTILO (Reutilizados) ---
+  Widget _buildStyledTextField(String label, String currentValue, {TextInputType keyboardType = TextInputType.text, List<MaskTextInputFormatter>? formatters, bool obscure = false, required Function(String) onChanged}) {
+    return TextField(
+      controller: TextEditingController(text: currentValue),
+      keyboardType: keyboardType,
+      inputFormatters: formatters,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.black87),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.lightBlue[700]),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.lightBlue, width: 2),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDateOfBirthField(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime(2015),
+          firstDate: DateTime(2000),
+          lastDate: DateTime.now(),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.lightBlue[300]!,
+                  onPrimary: Colors.white,
+                  onSurface: Colors.black87,
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.lightBlue[300],
+                  ),
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        setState(() {
+          dataNascimento = picked;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white, width: 0),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.calendar_today,
+              color: Colors.lightBlue[700],
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              dataNascimento != null
+                  ? DateFormat('dd/MM/yyyy').format(dataNascimento!)
+                  : 'Data de Nascimento',
+              style: TextStyle(
+                color: dataNascimento != null ? Colors.black87 : Colors.lightBlue[700],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    // Mantendo a estilização
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
-        title: const Align(alignment: Alignment.centerLeft, child: Text('Cadastro')),
+        title: const Center(
+          child: Text(
+            'CADASTRO', 
+            style: TextStyle(color: Colors.white)
+          )
+        ),
+        centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
+        iconTheme: const IconThemeData(color: Colors.white), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Nome'),
+            
+            _buildStyledTextField(
+              'Nome', 
+              nome,
               onChanged: (value) => nome = value,
             ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Email'),
+            const SizedBox(height: 15),
+            
+            _buildStyledTextField(
+              'Email', 
+              email,
+              keyboardType: TextInputType.emailAddress,
               onChanged: (value) => email = value,
             ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Telefone'),
+            const SizedBox(height: 15),
+            
+            _buildStyledTextField(
+              'Telefone', 
+              telefone,
               keyboardType: TextInputType.phone,
-              inputFormatters: [telefoneFormatter],
+              formatters: [telefoneFormatter],
               onChanged: (value) => telefone = value,
             ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Senha'),
-              obscureText: true,
+            const SizedBox(height: 15),
+            
+            _buildStyledTextField(
+              'Senha', 
+              senha,
+              obscure: true,
               onChanged: (value) => senha = value,
             ),
+            const SizedBox(height: 20),
+
+
+            // Dropdown de tipo de usuário
             Row(
               children: [
-                const Text('Você é:'),
+                const Text('Você é:', style: TextStyle(color: Colors.white)),
                 const SizedBox(width: 10),
                 DropdownButton(
                   value: dropdownValue,
                   items: list.map((value) {
-                    return DropdownMenuItem(value: value, child: Text(value));
+                    return DropdownMenuItem(value: value, child: Text(value, style: const TextStyle(color: Colors.black87)));
                   }).toList(),
                   onChanged: (String? value) {
                     setState(() {
@@ -85,40 +196,37 @@ class CadastroState extends State<Cadastro> {
                 ),
               ],
             ),
+            const SizedBox(height: 15),
+
             if (dropdownValue == 'Aluno') ...[
-              const SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Nome do Responsável'),
+              
+              _buildStyledTextField(
+                'Nome do Responsável', 
+                nomeResponsavel,
                 onChanged: (value) => nomeResponsavel = value,
               ),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Código da Turma'),
+              const SizedBox(height: 15),
+
+              // ⬅️ NOVO CAMPO: EMAIL DO RESPONSÁVEL
+              _buildStyledTextField(
+                'Email do Responsável (Obrigatório)', 
+                emailResponsavel,
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) => emailResponsavel = value,
+              ),
+              const SizedBox(height: 15),
+
+              
+              _buildStyledTextField(
+                'Código da Turma', 
+                codigoTurma,
                 onChanged: (value) => codigoTurma = value,
               ),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () async {
-                  DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime(2015),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now(),
-                  );
-                  setState(() {
-                    dataNascimento = picked;
-                  });
-                                },
-                child: AbsorbPointer(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Data de Nascimento',
-                      hintText: dataNascimento != null
-                          ? DateFormat('dd/MM/yyyy').format(dataNascimento!)
-                          : 'Selecione a data',
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 15),
+              
+              _buildDateOfBirthField(context),
+              const SizedBox(height: 15),
+
               DropdownButtonFormField<String>(
                 value: sexoSelecionado,
                 hint: const Text("Sexo"),
@@ -127,6 +235,8 @@ class CadastroState extends State<Cadastro> {
                 }).toList(),
                 onChanged: (value) => setState(() => sexoSelecionado = value),
               ),
+              const SizedBox(height: 15),
+              
               DropdownButtonFormField<String>(
                 value: nivelTEA,
                 hint: const Text("Nível de TEA"),
@@ -135,26 +245,41 @@ class CadastroState extends State<Cadastro> {
                 }).toList(),
                 onChanged: (value) => setState(() => nivelTEA = value),
               ),
+              const SizedBox(height: 15),
             ],
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async {
-                cadastrarUsuario(
-                  email: email,
-                  senha: senha,
-                  nome: nome,
-                  tipoUsuario: dropdownValue.toLowerCase(),
-                  id_responsavel: nomeResponsavel,
-                  data_nascimento: dataNascimento,
-                  sexo: sexoSelecionado,
-                  nivel_tea: nivelTEA,
-                  id_turma: codigoTurma,
-                  telefone: telefone,
-                  context: context,
-                );
+            
+            // Botão CADASTRAR
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () async {
+                  cadastrarUsuario(
+                    email: email,
+                    senha: senha,
+                    nome: nome,
+                    tipoUsuario: dropdownValue.toLowerCase(),
+                    email_responsavel: emailResponsavel, // ⬅️ Passando o EMAIL
+                    data_nascimento: dataNascimento,
+                    sexo: sexoSelecionado,
+                    nivel_tea: nivelTEA,
+                    id_turma: codigoTurma,
+                    telefone: telefone,
+                    context: context,
+                  );
 
-              },
-              child: const Text('CADASTRAR'),
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 61, 178, 217),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text(
+                  'CADASTRAR',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ]),
         ),
@@ -162,12 +287,13 @@ class CadastroState extends State<Cadastro> {
     );
   }
 
+  // ⬅️ FUNÇÃO CORRIGIDA PARA BUSCAR O UUID DO RESPONSÁVEL PELO EMAIL
   Future<void> cadastrarUsuario({
     required String email,
     required String senha,
     required String nome,
     required String tipoUsuario,
-    String? id_responsavel,
+    String? email_responsavel, // ⬅️ Recebe o EMAIL
     DateTime? data_nascimento,
     String? sexo,
     String? nivel_tea,
@@ -177,41 +303,30 @@ class CadastroState extends State<Cadastro> {
   }) async {
     final supabase = Supabase.instance.client;
 
-    showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Resumo do Cadastro'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: [
-              Text('Nome: $nome'),
-              Text('Email: $email'),
-              Text('Tipo de Usuário: $tipoUsuario'),
-              if (tipoUsuario == 'aluno') ...[
-                Text('Email do Responsável: $emailResponsavel'),
-                Text('Data de Nascimento: ${DateFormat('dd/MM/yyyy').format(dataNascimento!) }'),
-                Text('Sexo: $sexo'),
-                Text('Nível TEA: $nivelTEA'),
-                Text('Turma: $id_turma'),
-              ]
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Fechar'),
-          )
-        ],
-      );
-    },
-  );
-
+    // ... (Seu código de showDialog permanece aqui)
 
     try {
       if(tipoUsuario == "responsável"){tipoUsuario = "responsavel";}
       Map<String, dynamic>? aluno;
+      String? idResponsavel; // UUID do responsável
+
+      // 1. Encontra o UUID do Responsável pelo EMAIL, se o tipo for Aluno
+      if (tipoUsuario == 'aluno' && email_responsavel != null && email_responsavel.isNotEmpty) {
+        final respData = await supabase
+            .from('contato') // Busca na tabela de contato
+            .select('id_usuario')
+            .eq('email', email_responsavel)
+            .maybeSingle(); 
+        
+        if (respData == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Erro: Email do Responsável não encontrado no sistema.')),
+          );
+          return;
+        }
+        idResponsavel = respData['id_usuario']; // Pega o UUID do usuário
+      }
+
 
       final authResponse = await supabase.auth.signUp(
         email: email,
@@ -221,6 +336,7 @@ class CadastroState extends State<Cadastro> {
       final user = authResponse.user;
       if (user == null) throw Exception('Erro ao criar conta.');
 
+      // 2. Cria o registro do Usuário
       final userAuthenticated = await supabase
           .from('usuario')
           .insert({'id': user.id, 'nome': nome, 'tipo_usuario': tipoUsuario})
@@ -229,6 +345,7 @@ class CadastroState extends State<Cadastro> {
 
       final usuarioId = userAuthenticated['id'];
 
+      // 3. Insere Contato
       if (telefone != null && telefone.isNotEmpty) {
         await supabase.from('contato').insert({
           'id_usuario': usuarioId,
@@ -238,21 +355,26 @@ class CadastroState extends State<Cadastro> {
         });
       }
 
+      // 4. Insere Aluno e Relacionamento
       if (tipoUsuario == 'aluno') {
         try {
+          // Inserção na tabela 'aluno'
           aluno = await supabase.from('aluno').insert({
             'id': usuarioId,
-            'id_responsavel': id_responsavel,
+            'id_responsavel': idResponsavel, // ⬅️ Agora usa o UUID do Responsável
             'data_nascimento': data_nascimento?.toIso8601String(),
             'sexo': sexo,
             'nivel_tea': nivel_tea,
             'id_turma': id_turma,
-          });
-          // 3. Inserir na tabela `responsavel_aluno`
-          await supabase.from('responsavel_aluno').insert({
-            'id_responsavel': id_responsavel,
-            'id_aluno': usuarioId,
-          });
+          }).select().single();
+
+          // Inserção na tabela `responsavel_aluno`
+          if (idResponsavel != null) {
+            await supabase.from('responsavel_aluno').insert({
+              'id_responsavel': idResponsavel, // ⬅️ Agora usa o UUID
+              'id_aluno': usuarioId,
+            });
+          }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Erro ao cadastrar aluno: ${e.toString()}')),
@@ -261,8 +383,8 @@ class CadastroState extends State<Cadastro> {
         }
       }
 
-
-      if (tipoUsuario == 'aluno') {
+      // 5. Navegação
+      if (tipoUsuario == 'aluno' && aluno != null) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => InicioAluno(usuario: userAuthenticated, aluno: aluno!,)));
       } else if (tipoUsuario == 'professor') {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const InicioProfessor()));

@@ -1,7 +1,7 @@
 import 'package:educare/Services/supabase.dart'; 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-// Mantenha todos os seus imports originais
+// Importa as telas
 import 'Questionario.dart'; 
 import 'Rotina.dart'; 
 import 'Contatos.dart'; 
@@ -19,31 +19,72 @@ class InicioResponsavel extends StatefulWidget {
 
 class InicioResponsavelState extends State<InicioResponsavel> {
   final supabase = Supabase.instance.client;
-  
-  // Variável de estado para guardar o nome do usuário
   String _nomeResponsavel = 'Responsável'; 
+  Map<String, dynamic>? _alunoPendente; // Guarda o ID e NOME do aluno que precisa preencher
 
   @override
   void initState() {
     super.initState();
-    _fetchResponsavelName(); // Chama a busca do nome ao iniciar a tela
+    _fetchResponsavelName(); 
+    _checkQuestionarioStatus(); 
   }
 
-  // Função para buscar o nome do responsável logado no Supabase
+  // ⬅️ LÓGICA DE CHECAGEM CORRIGIDA: Usa a tabela questionario_resp como FLAG
+  Future<void> _checkQuestionarioStatus() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+    
+    try {
+      // 1. Pega IDs dos alunos
+      final alunosResp = await supabase
+          .from('responsavel_aluno')
+          .select('id_aluno')
+          .eq('id_responsavel', userId);
+      
+      final idsAlunos = alunosResp.map((e) => e['id_aluno']).toList();
+      if (idsAlunos.isEmpty) return;
+      
+      // 2. Busca o primeiro aluno que NÃO preencheu o questionario_resp
+      // Faz um LEFT JOIN e verifica se a FK na tabela de questionário é NULA
+      final alunoPendenteResp = await supabase
+          .from('aluno')
+          // Seleciona o ID do aluno, o NOME do usuário e o ID_aluno da tabela questionario_resp (se existir)
+          .select('id, usuario:id!inner(nome), questionario_resp(id_aluno)') 
+          .inFilter('id', idsAlunos)
+          .filter('questionario_resp.id_aluno', 'is', null) // Filtra onde a FK na tabela 'questionario_resp' é NULA
+          .limit(1) 
+          .maybeSingle(); 
+          
+      if (alunoPendenteResp != null && mounted) {
+        setState(() {
+          // Os dados do aluno pendente virão do primeiro nível da query (aluno)
+          _alunoPendente = {
+            'id': alunoPendenteResp['id'],
+            'nome': alunoPendenteResp['usuario']['nome'] ?? 'Seu Aluno',
+          };
+        });
+      }
+      
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao checar status do questionário: $e');
+    }
+  }
+
+
+  // Função para buscar o nome do responsável logado no Supabase (Mantida a correção para 'usuario')
   void _fetchResponsavelName() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
 
     try {
-      // Assumindo que a tabela de usuário/responsável se chama 'responsavel'
-      // E que ela tem uma coluna 'id' e 'nome'
       final response = await supabase
-          .from('responsavel') 
+          .from('usuario') 
           .select('nome')
           .eq('id', userId)
           .single();
 
-      if (response.isNotEmpty) {
+      if (response.isNotEmpty && mounted) {
         setState(() {
           _nomeResponsavel = response['nome'] ?? 'Responsável';
         });
@@ -57,8 +98,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
     }
   }
 
-  void buscarDiariosDeHoje() async {
-    // ... (Seu código de buscarDiariosDeHoje permanece inalterado)
+  void buscarDiariosDiariosDeHoje() async {
     final userId = supabase.auth.currentUser!.id;
     final responseResponsavelAlunos = await supabase
         .from('responsavel_aluno')
@@ -69,7 +109,6 @@ class InicioResponsavelState extends State<InicioResponsavel> {
     if (alunos.isEmpty) {
       // ignore: avoid_print
       print('Nenhum aluno vinculado ao responsável');
-      // Lembrete: Adicionar uma mensagem visual para o usuário aqui.
       return;
     }
 
@@ -100,6 +139,32 @@ class InicioResponsavelState extends State<InicioResponsavel> {
 
   @override
   Widget build(BuildContext context) {
+    // ⬅️ REDIRECIONAMENTO CRÍTICO AQUI
+    if (_alunoPendente != null) {
+      // Se houver qualquer aluno sem o questionário, força a ir para lá
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Questionario(
+              idAluno: _alunoPendente!['id'], // Passa o ID
+              nomeAluno: _alunoPendente!['nome'], // Passa o NOME
+            )
+          ), 
+        ).then((_) {
+            // Recarrega o status quando voltar
+            _checkQuestionarioStatus(); 
+        });
+      });
+      return const Scaffold(
+        backgroundColor: Colors.lightBlue,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        )
+      ); 
+    }
+    // ⬅️ FIM DO REDIRECIONAMENTO
+
     final screenWidth = MediaQuery.of(context).size.width;
     final buttonWidth = (screenWidth - 45) / 2;
 
@@ -110,30 +175,29 @@ class InicioResponsavelState extends State<InicioResponsavel> {
             alignment: Alignment.centerLeft, 
             child: Text(
               'Início', 
-              style: TextStyle(color: Colors.white) // Refinamento: Cor do título em branco
+              style: TextStyle(color: Colors.white)
             )
         ),
         backgroundColor: Colors.lightBlue[300],
-        iconTheme: const IconThemeData(color: Colors.white), // Refinamento: Cor do ícone do Drawer em branco
+        iconTheme: const IconThemeData(color: Colors.white), 
       ),
       
-      // Drawer com refinamento de alinhamento
       drawer: Drawer(
         child: ListView(
-            padding: EdgeInsets.zero, // Remove padding superior para alinhar o Header
+            padding: EdgeInsets.zero, 
             children: [
               DrawerHeader(
                 margin: const EdgeInsets.all(0),
                 decoration: const BoxDecoration(
                   color: Colors.lightBlue,
                 ),
-                padding: const EdgeInsets.only(top: 10, left: 15), // Ajuste de padding
+                padding: const EdgeInsets.only(top: 10, left: 15),
                 child: const Align(
-                  alignment: Alignment.bottomLeft, // Alinha o texto na esquerda e em baixo
+                  alignment: Alignment.bottomLeft,
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 15),
                     child: Text(
-                      'Menu', // Refinamento: Agora alinhado à esquerda
+                      'Menu',
                       style: TextStyle(color: Colors.white, fontSize: 24),
                       textAlign: TextAlign.left,
                     ),
@@ -186,7 +250,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
                   title: 'Resumo Diário',
                   icon: Icons.assignment_outlined, 
                   color: const Color.fromARGB(255, 61, 178, 217), 
-                  onTap: buscarDiariosDeHoje,
+                  onTap: buscarDiariosDiariosDeHoje,
                 ),
                 
                 // ROTINA
@@ -260,7 +324,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Seja Bem-Vindo!", // Alterado para exibir o nome
+            "Seja Bem-Vindo, $nome!",
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -325,6 +389,4 @@ class InicioResponsavelState extends State<InicioResponsavel> {
       ),
     );
   }
-
-  // O _buildInfoCard foi removido, seguindo a sua modificação.
 }
