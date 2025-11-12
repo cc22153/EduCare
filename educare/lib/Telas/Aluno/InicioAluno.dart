@@ -1,3 +1,4 @@
+import 'package:educare/Telas/Aluno/PulseiraPage.dart';
 import 'package:educare/Telas/Aluno/RotinaAluno.dart';
 import 'package:educare/Telas/Login.dart';
 import 'package:flutter/material.dart';
@@ -192,7 +193,7 @@ class InicioAlunoState extends State<InicioAluno> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DiarioAluno(idAluno: widget.aluno['id'],)),
+                                builder: (context) => const PulseiraPage())//DiarioAluno(idAluno: widget.aluno['id'],)),
                           );
                         },
                         style: ElevatedButton.styleFrom(

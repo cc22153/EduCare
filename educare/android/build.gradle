@@ -6,11 +6,17 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
+
+    // 🧩 Corrigir namespace do flutter_local_notifications (sem afterEvaluate)
+    if (project.name == "flutter_local_notifications") {
+        project.plugins.withId("com.android.library") {
+            project.android.namespace = "com.dexterous.flutterlocalnotifications"
+        }
+    }
 }
 
 tasks.register("clean", Delete) {
