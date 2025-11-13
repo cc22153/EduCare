@@ -15,7 +15,7 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
   final nomeController = TextEditingController();
   final emailController = TextEditingController();
   final telefoneController = TextEditingController();
- // final senhaController = TextEditingController(); // Apenas para simular a mudança de senha
+  final senhaController = TextEditingController(); // Apenas para simular a mudança de senha
 
   bool carregando = true;
 
@@ -31,14 +31,14 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     if (userId == null) return;
 
     try {
-      // Busca o Nome na tabela 'usuario'
+      // 1. Busca o Nome na tabela 'usuario'
       final nome = await supabase
           .from('usuario')
           .select('nome')
           .eq('id', userId)
           .maybeSingle();
 
-      // Busca o Email e Telefone na tabela 'contato'
+      // 2. Busca o Email e Telefone na tabela 'contato'
       final dados = await supabase
           .from('contato')
           .select('email, telefone')
@@ -70,20 +70,20 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     if (userId == null) return;
 
     try {
-   
+      // 1. Atualiza o nome na tabela 'usuario'
       await supabase.from('usuario').update({
         'nome': nomeController.text,
       }).eq('id', userId);
 
-      // Atualiza/Insere o contato na tabela 'contato'
-     
+      // 2. Atualiza/Insere o contato na tabela 'contato'
+      // Usamos upsert para inserir se não existir ou atualizar se existir (baseado em id_usuario)
        await supabase.from('contato').upsert({
         'id_usuario': userId, 
         'email': emailController.text,
         'telefone': telefoneController.text,
       }, onConflict: 'id_usuario'); 
       
-      //  Lógica para mudar a senha (Se a senhaController.text for diferente de vazio, você precisaria usar supabase.auth.updateUser)
+      // 3. Lógica para mudar a senha (Se a senhaController.text for diferente de vazio, você precisaria usar supabase.auth.updateUser)
       
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +99,7 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     }
   }
 
-  
+  // Widget para TextField estilizado (Reutilizado das telas anteriores)
   Widget _buildStyledTextField(TextEditingController controller, String label, {TextInputType keyboardType = TextInputType.text, bool obscure = false}) {
     return TextField(
       controller: controller,
@@ -158,9 +158,9 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
                     _buildStyledTextField(telefoneController, 'Telefone', keyboardType: TextInputType.phone),
                     const SizedBox(height: 15),
                     
-                   /*
+                    // Campo Senha (Apenas para nova senha)
                     _buildStyledTextField(senhaController, 'Nova Senha (deixe vazio para manter a atual)', obscure: true),
-                    */
+                    
                     const SizedBox(height: 40),
                     
                     // Botão SALVAR ALTERAÇÕES
