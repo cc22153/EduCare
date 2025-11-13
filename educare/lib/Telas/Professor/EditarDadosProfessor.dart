@@ -15,7 +15,7 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
   final nomeController = TextEditingController();
   final emailController = TextEditingController();
   final telefoneController = TextEditingController();
-  final senhaController = TextEditingController(); // Apenas para simular a mudança de senha
+
 
   bool carregando = true;
 
@@ -157,10 +157,7 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
                     // Campo Telefone
                     _buildStyledTextField(telefoneController, 'Telefone', keyboardType: TextInputType.phone),
                     const SizedBox(height: 15),
-                    
-                    // Campo Senha (Apenas para nova senha)
-                    _buildStyledTextField(senhaController, 'Nova Senha (deixe vazio para manter a atual)', obscure: true),
-                    
+    
                     const SizedBox(height: 40),
                     
                     // Botão SALVAR ALTERAÇÕES
