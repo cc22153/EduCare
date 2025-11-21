@@ -44,6 +44,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <!-- Permite que seu app seja aberto por links -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+    
+                <!-- Define o esquema do seu Deep Link: io.supabase.educare://login/reset-password -->
+                <data android:scheme="io.supabase.educare" android:host="login" /> 
             </intent-filter>
 
         </activity>
