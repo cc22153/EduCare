@@ -25,20 +25,20 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     carregarDadosUsuario();
   }
 
-  // Lógica para buscar os dados do professor logado
+  
   Future<void> carregarDadosUsuario() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
 
     try {
-      // 1. Busca o Nome na tabela 'usuario'
+    
       final nome = await supabase
           .from('usuario')
           .select('nome')
           .eq('id', userId)
           .maybeSingle();
 
-      // 2. Busca o Email e Telefone na tabela 'contato'
+      
       final dados = await supabase
           .from('contato')
           .select('email, telefone')
@@ -70,22 +70,19 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     if (userId == null) return;
 
     try {
-      // 1. Atualiza o nome na tabela 'usuario'
+      
       await supabase.from('usuario').update({
         'nome': nomeController.text,
       }).eq('id', userId);
 
-      // 2. Atualiza/Insere o contato na tabela 'contato'
-      // Usamos upsert para inserir se não existir ou atualizar se existir (baseado em id_usuario)
+      
        await supabase.from('contato').upsert({
         'id_usuario': userId, 
         'email': emailController.text,
         'telefone': telefoneController.text,
       }, onConflict: 'id_usuario'); 
       
-      // 3. Lógica para mudar a senha (Se a senhaController.text for diferente de vazio, você precisaria usar supabase.auth.updateUser)
-      
-      // ignore: use_build_context_synchronously
+   
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Dados atualizados com sucesso!')),
       );
@@ -99,7 +96,6 @@ class EditarDadosProfessorState extends State<EditarDadosProfessor> {
     }
   }
 
-  // Widget para TextField estilizado (Reutilizado das telas anteriores)
   Widget _buildStyledTextField(TextEditingController controller, String label, {TextInputType keyboardType = TextInputType.text, bool obscure = false}) {
     return TextField(
       controller: controller,

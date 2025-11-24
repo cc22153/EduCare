@@ -1,60 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class EditarDadosResponsavel extends StatefulWidget {
-  const EditarDadosResponsavel({super.key});
+class EditarDadosAluno extends StatefulWidget {
+ 
+  final String alunoId; 
+  const EditarDadosAluno({super.key, required this.alunoId});
 
   @override
-  State<EditarDadosResponsavel> createState() => _EditarDadosResponsavelState();
+  State<EditarDadosAluno> createState() => _EditarDadosAlunoState();
 }
 
-class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
+class _EditarDadosAlunoState extends State<EditarDadosAluno> {
   final supabase = Supabase.instance.client;
+
 
   final nomeController = TextEditingController();
   final emailController = TextEditingController();
   final telefoneController = TextEditingController();
-
+  final emailResponsavelController = TextEditingController();
+  final turmaIdController = TextEditingController(); // Se for código/ID
 
   bool carregando = true;
 
   @override
   void initState() {
     super.initState();
-    carregarDadosUsuario();
+    carregarDadosAluno();
   }
 
-  
-  Future<void> carregarDadosUsuario() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
+  Future<void> carregarDadosAluno() async {
+    final userId = widget.alunoId;
+    if (userId.isEmpty) return;
 
     try {
- 
-      final nome = await supabase
+     
+      final nomeData = await supabase
           .from('usuario')
           .select('nome')
           .eq('id', userId)
           .maybeSingle();
 
-      final dados = await supabase
+     
+      final contatoData = await supabase
           .from('contato')
           .select('email, telefone')
           .eq('id_usuario', userId)
           .maybeSingle();
+          
+      final alunoData = await supabase
+          .from('aluno')
+          .select('email_responsavel, id_turma')
+          .eq('id', userId)
+          .maybeSingle();
 
       if (mounted) {
-        if (nome != null) {
-          nomeController.text = nome['nome'] ?? '';
+        if (nomeData != null) nomeController.text = nomeData['nome'] ?? '';
+        if (contatoData != null) {
+          emailController.text = contatoData['email'] ?? '';
+          telefoneController.text = contatoData['telefone'] ?? '';
         }
-        if (dados != null) {
-          emailController.text = dados['email'] ?? '';
-          telefoneController.text = dados['telefone'] ?? '';
+        if (alunoData != null) {
+          emailResponsavelController.text = alunoData['email_responsavel'] ?? '';
+          turmaIdController.text = alunoData['id_turma']?.toString() ?? ''; 
         }
       }
     } catch (e) {
       // ignore: avoid_print
-      print('Erro ao carregar dados: $e');
+      print('Erro ao carregar dados do Aluno: $e');
     }
 
     setState(() {
@@ -62,39 +74,45 @@ class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
     });
   }
   
-
+  
   Future<void> atualizarDados() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
+    final userId = widget.alunoId;
+    if (userId.isEmpty) return;
 
     try {
-      
+    
       await supabase.from('usuario').update({
         'nome': nomeController.text,
       }).eq('id', userId);
 
-      
+   
        await supabase.from('contato').upsert({
         'id_usuario': userId, 
         'email': emailController.text,
         'telefone': telefoneController.text,
       }, onConflict: 'id_usuario'); 
       
+    
+      await supabase.from('aluno').update({
+        'email_responsavel': emailResponsavelController.text,
+        'id_turma': turmaIdController.text, 
+      }).eq('id', userId); 
       
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dados atualizados com sucesso!')),
+        const SnackBar(content: Text('Dados do Aluno atualizados com sucesso!')),
       );
     } catch (e) {
       // ignore: avoid_print
-      print('Erro ao atualizar: $e');
+      print('Erro ao atualizar dados do Aluno: $e');
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao atualizar os dados')),
+        const SnackBar(content: Text('Erro ao atualizar os dados do aluno')),
       );
     }
   }
 
-  
+ 
   Widget _buildStyledTextField(TextEditingController controller, String label, {TextInputType keyboardType = TextInputType.text, bool obscure = false}) {
     return TextField(
       controller: controller,
@@ -125,7 +143,7 @@ class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
       appBar: AppBar(
         title: const Center( 
           child: Text(
-            'EDITAR DADOS',
+            'EDITAR DADOS', 
             style: TextStyle(color: Colors.white)
           )
         ),
@@ -142,16 +160,26 @@ class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Campo Nome
-                    _buildStyledTextField(nomeController, 'Nome'),
+                    _buildStyledTextField(nomeController, 'Nome do Aluno'),
                     const SizedBox(height: 15),
 
-                    // Campo Email
-                    _buildStyledTextField(emailController, 'Email', keyboardType: TextInputType.emailAddress),
+                    // Campo Email (do Aluno)
+                    _buildStyledTextField(emailController, 'Email de Contato do Aluno', keyboardType: TextInputType.emailAddress),
                     const SizedBox(height: 15),
                     
-                    // Campo Telefone
-                    _buildStyledTextField(telefoneController, 'Telefone', keyboardType: TextInputType.phone),
+                    // Campo Telefone (do Aluno)
+                    _buildStyledTextField(telefoneController, 'Telefone de Contato do Aluno', keyboardType: TextInputType.phone),
                     const SizedBox(height: 15),
+
+                    const Divider(color: Colors.lightBlue), // Separador visual
+
+                    // Campo Email do Responsável
+                    _buildStyledTextField(emailResponsavelController, 'Email do Responsável'),
+                    const SizedBox(height: 15),
+                    
+                    // Campo Código da Turma
+                    _buildStyledTextField(turmaIdController, 'Código/ID da Turma'),
+                    const SizedBox(height: 25),
     
                     const SizedBox(height: 40),
                     
@@ -161,14 +189,14 @@ class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
                       child: ElevatedButton(
                         onPressed: atualizarDados,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 61, 178, 217),
+                          backgroundColor: const Color.fromARGB(255, 61, 178, 217), // Cor do botão da Rotina
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           elevation: 5,
                         ),
                         child: const Text(
-                          'SALVAR ALTERAÇÕES',
+                          'SALVAR ALTERAÇÕES DO ALUNO',
                           style: TextStyle(
                             fontSize: 18, 
                             color: Colors.white, 
@@ -177,6 +205,7 @@ class _EditarDadosResponsavelState extends State<EditarDadosResponsavel> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

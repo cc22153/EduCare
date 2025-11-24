@@ -89,11 +89,11 @@ class _RotinaState extends State<Rotina> {
     final userId = supabase.auth.currentUser?.id;
 
     if (tituloController.text.isEmpty || horarioController.text.isEmpty || tarefaController.text.isEmpty) {
-       // ignore: use_build_context_synchronously
-       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos para adicionar a tarefa!')),
-      );
-      return;
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+         const SnackBar(content: Text('Preencha todos os campos para adicionar a tarefa!')),
+       );
+       return;
     }
 
     await supabase.from('rotina').insert({
@@ -112,6 +112,119 @@ class _RotinaState extends State<Rotina> {
     FocusScope.of(context).unfocus(); // Fecha o teclado
     
     await carregarTarefas(alunoSelecionadoId!);
+  }
+  
+  // ATUALIZAR TAREFA
+  // O ID agora é tratado como String, consistente com UUID
+  Future<void> atualizarTarefa(String id, String novoTitulo, String novaDataHora, String novaDescricao) async {
+    try {
+      await supabase.from('rotina').update({
+        'titulo': novoTitulo,
+        'data_hora': novaDataHora,
+        'descricao': novaDescricao,
+      }).eq('id', id);
+
+      if (alunoSelecionadoId != null) {
+        await carregarTarefas(alunoSelecionadoId!);
+      }
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarefa atualizada com sucesso!')),
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao atualizar tarefa: $e');
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao atualizar a tarefa')),
+      );
+    }
+  }
+
+  // REMOVER TAREFA 
+  // O ID agora é tratado como String, consistente com UUID
+  Future<void> removerTarefa(String id) async {
+    try {
+      await supabase.from('rotina').delete().eq('id', id);     
+
+      if (alunoSelecionadoId != null) {
+        await carregarTarefas(alunoSelecionadoId!);
+      }
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarefa removida com sucesso!')),
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print('Erro ao remover tarefa: $e');
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao remover a tarefa')),
+      );
+    }
+  }
+
+
+  //  MOSTRAR DIALOG DE EDIÇÃO
+  void mostrarDialogEditarTarefa(Map<String, dynamic> tarefa) {
+    final tituloEditController = TextEditingController(text: tarefa['titulo']);
+    final horarioEditController = TextEditingController(text: tarefa['data_hora']);
+    final descricaoEditController = TextEditingController(text: tarefa['descricao']);
+    
+    // CORRIGIDO: O ID da tarefa é extraído e convertido para String (UUID)
+    final tarefaId = tarefa['id'].toString(); 
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Editar Tarefa"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildStyledTextField(tituloEditController, 'Título:'),
+                const SizedBox(height: 10),
+                _buildStyledTextField(horarioEditController, 'Horário: (Ex: 10:00)'),
+                const SizedBox(height: 10),
+                _buildStyledTextField(descricaoEditController, 'Descrição da Tarefa:', maxLines: 2),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancelar", style: TextStyle(color: Colors.red)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (tituloEditController.text.isNotEmpty && 
+                    horarioEditController.text.isNotEmpty && 
+                    descricaoEditController.text.isNotEmpty) {
+                  
+                  await atualizarTarefa(
+                    tarefaId,
+                    tituloEditController.text,
+                    horarioEditController.text,
+                    descricaoEditController.text,
+                  );
+                  Navigator.of(context).pop(); // Fecha o dialog
+                } else {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                     const SnackBar(content: Text('Preencha todos os campos para salvar!')),
+                   );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[400], // Botão de confirmar verde
+              ),
+              child: const Text("Salvar", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -176,44 +289,58 @@ class _RotinaState extends State<Rotina> {
             Expanded(
               child: tarefas.isEmpty
                   ? Center(
-                      child: Text(
-                        alunoSelecionadoId == null 
-                          ? "Selecione um aluno para ver as tarefas."
-                          : "Nenhuma tarefa encontrada para este aluno.",
-                        style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                       child: Text(
+                         alunoSelecionadoId == null 
+                           ? "Selecione um aluno para ver as tarefas."
+                           : "Nenhuma tarefa encontrada para este aluno.",
+                         style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                       ),
+                     )
+                    : ListView.builder(
+                        itemCount: tarefas.length,
+                        itemBuilder: (context, index) {
+                          final tarefa = tarefas[index];
+                          final Color cardColor = index % 2 == 0 
+                            ? Colors.white // Branco
+                            : const Color.fromARGB(255, 230, 245, 255); // Azul claro
+                            
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            color: cardColor,
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            child: ListTile(
+                              leading: Icon(Icons.check_circle_outline, color: Colors.green[400]),
+                              title: Text(
+                                tarefa['titulo'] ?? 'Sem Título', 
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)
+                              ),
+                              subtitle: Text(
+                                "${tarefa['data_hora']} - ${tarefa['descricao'] ?? 'Sem descrição'}",
+                                style: const TextStyle(color: Colors.black54),
+                              ),
+                              // ALTERAÇÃO: Ícones de Editar e Deletar
+                              trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                      IconButton(
+                                          icon: const Icon(Icons.edit, color: Colors.blueAccent, size: 20),
+                                          onPressed: () => mostrarDialogEditarTarefa(tarefa), // Chama a função de edição
+                                      ),
+                                      IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.redAccent, size: 20),
+                                          // CORRIGIDO: Converte o ID para String para corresponder à assinatura da função removerTarefa (UUID)
+                                          onPressed: () => removerTarefa(tarefa['id'].toString()), 
+                                      ),
+                                  ],
+                              ),
+                              onTap: () {
+                                // A ação principal pode ser removida ou mantida
+                              },
+                            ),
+                          );
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: tarefas.length,
-                      itemBuilder: (context, index) {
-                        final tarefa = tarefas[index];
-                        final Color cardColor = index % 2 == 0 
-                          ? Colors.white // Branco
-                          : const Color.fromARGB(255, 230, 245, 255); // Azul claro
-                          
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          color: cardColor,
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          child: ListTile(
-                            leading: Icon(Icons.check_circle_outline, color: Colors.green[400]),
-                            title: Text(
-                              tarefa['titulo'] ?? 'Sem Título', 
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)
-                            ),
-                            subtitle: Text(
-                              "${tarefa['data_hora']} - ${tarefa['descricao'] ?? 'Sem descrição'}",
-                              style: const TextStyle(color: Colors.black54),
-                            ),
-                            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                            onTap: () {
-                              // Adicionar navegação para detalhes ou edição da tarefa aqui, se for necessário
-                            },
-                          ),
-                        );
-                      },
-                    ),
             ),
 
             const SizedBox(height: 10),
@@ -253,7 +380,7 @@ class _RotinaState extends State<Rotina> {
     );
   }
 
-  // Novo Widget para TextField estilizado
+  
   Widget _buildStyledTextField(TextEditingController controller, String label, {int maxLines = 1}) {
     return TextField(
       controller: controller,

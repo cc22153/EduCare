@@ -17,7 +17,7 @@ class InicioProfessor extends StatefulWidget {
 
 class InicioProfessorState extends State<InicioProfessor> {
   
-  // Função que mostra o pop-up de sair (reutilizada)
+  // Função que mostra o pop-up de sair
   void _mostrarDialogoSair() {
     showDialog(
       context: context,
@@ -49,7 +49,7 @@ class InicioProfessorState extends State<InicioProfessor> {
     );
   }
   
-  // --- Novo Widget para Botão em Grade ---
+ 
   Widget _buildGridButton({
     required double width,
     required String title,
@@ -59,7 +59,7 @@ class InicioProfessorState extends State<InicioProfessor> {
   }) {
     return SizedBox(
       width: width,
-      height: width, // Torna o botão quadrado
+      height: width, 
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
@@ -139,15 +139,15 @@ class InicioProfessorState extends State<InicioProfessor> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculamos a largura da tela para os botões de grade (2x2)
+   
     final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = (screenWidth - 45) / 2; // 30 (padding) + 15 (spacing)
+    final buttonWidth = (screenWidth - 45) / 2; 
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
 
       appBar: AppBar(
-        // Refinamento: Título e ícone de voltar em branco e centralizado
+        // Título e ícone de voltar em branco e centralizado
         title: const Center(
           child: Text(
             'INÍCIO', 
@@ -187,7 +187,7 @@ class InicioProfessorState extends State<InicioProfessor> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const EditarDadosProfessor()),
-                );
+                ); 
               },
             ),
             ListTile(
@@ -203,14 +203,14 @@ class InicioProfessorState extends State<InicioProfessor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cartão de Boas-Vindas (Reutilizado)
+            // Cartão de Boas-Vindas
             _buildWelcomeCard(),
             const SizedBox(height: 25),       
 
-            // Layout de Grade (2x2)
+            
             Wrap(
-              spacing: 15, // Espaço horizontal entre os botões
-              runSpacing: 15, // Espaço vertical entre as linhas
+              spacing: 15, 
+              runSpacing: 15, 
               children: [
                 // 1. ALUNOS
                 _buildGridButton(

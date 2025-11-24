@@ -18,6 +18,39 @@ class InicioResponsavel extends StatefulWidget {
 }
 
 class InicioResponsavelState extends State<InicioResponsavel> {
+
+  
+  void _mostrarDialogoSair() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação'),
+          content: const Text('Tem certeza de que deseja sair da sua conta?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(), 
+            ),
+            TextButton(
+              child: const Text('Sair', style: TextStyle(color: Colors.red)),
+              onPressed: () async {
+                Navigator.of(context).pop(); 
+                await Supabase.instance.client.auth.signOut();
+                if (mounted) { 
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Login()),
+                      (Route<dynamic> route) => false,
+                    );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final supabase = Supabase.instance.client;
   String _nomeResponsavel = 'Responsável'; 
   Map<String, dynamic>? _alunoPendente; // Guarda o ID e NOME do aluno que precisa preencher
@@ -217,6 +250,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
               ListTile(
                 leading: const Icon(Icons.exit_to_app),
                 title: const Text('Sair'),
+                
                 onTap: () async {
                   await Supabase.instance.client.auth.signOut();
                   // ignore: use_build_context_synchronously
