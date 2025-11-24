@@ -18,7 +18,7 @@ class InicioAluno extends StatefulWidget {
 
 class InicioAlunoState extends State<InicioAluno> {
   
-  // Função que mostra o pop-up de sair
+ 
   void _mostrarDialogoSair() {
     showDialog(
       context: context,
@@ -52,7 +52,8 @@ class InicioAlunoState extends State<InicioAluno> {
       },
     );
   }
- 
+  
+  
   Widget _buildGridButton({
     required double width,
     required String title,
@@ -97,8 +98,8 @@ class InicioAlunoState extends State<InicioAluno> {
       ),
     );
   }
-
   
+  // Widget para item do Drawer 
   Widget _buildDrawerItem({
     required IconData icon,
     required String title,
@@ -119,7 +120,7 @@ class InicioAlunoState extends State<InicioAluno> {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       
-    
+     
       appBar: AppBar(
         title: const Center(
           child: Padding(
@@ -132,14 +133,20 @@ class InicioAlunoState extends State<InicioAluno> {
         ),
         centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
-       
-        leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white), 
-            onPressed: () => Scaffold.of(context).openDrawer(),
+        
+        leading: Builder(
+          builder: (BuildContext innerContext) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white), 
+              onPressed: () {
+                Scaffold.of(innerContext).openDrawer(); 
+              },
+            );
+          },
         ),
       ),
       
-  
+     
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -167,15 +174,14 @@ class InicioAlunoState extends State<InicioAluno> {
               icon: Icons.person,
               title: 'Editar Dados',
               onTap: () {
-                
                 ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(content: Text('Navegar para Editar Dados'))
+                   const SnackBar(content: Text('Navegar para Editar Dados do Responsável'))
                  );
                 Navigator.pop(context);
               },
             ),
             const Divider(),
-            // OPÇÃO SAIR
+            
             _buildDrawerItem(
               icon: Icons.exit_to_app,
               title: 'Sair',
@@ -187,13 +193,14 @@ class InicioAlunoState extends State<InicioAluno> {
         ),
       ),
      
-    
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container de Boas-Vindas (MANTIDO)
+            const SizedBox(height: 10),
+            // Container
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(15),
@@ -231,44 +238,9 @@ class InicioAlunoState extends State<InicioAluno> {
                 ],
               ),
             ),
-            const SizedBox(height: 15),
-            // Container de Recados Importantes 
-            Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Color(0xFF009ADA),
-              ),
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              child: const Column(
-                children: [
-                  Text(
-                    "Recados Importantes!",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Divider(
-                    height: 10,
-                    color: Colors.white,
-                    indent: 10,
-                    endIndent: 10,
-                  ),
-                  Text(
-                    "Do dia 18/04 ao 23/04 não teremos aulas!",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
             
-            // Botão Rotina (MANTIDO ESTILO ORIGINAL)
+            const SizedBox(height: 30),
+            
             SizedBox(
               width: buttonWidth * 2.5,
               height: buttonWidth,
@@ -315,17 +287,17 @@ class InicioAlunoState extends State<InicioAluno> {
                 ),
               ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 35),
             
-            // Botões Diário e Emoções (COM ESTÉTICA PROFESSOR/GRID)
+            // Botões Diário e Emoções 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 1. DIÁRIO (COM CORREÇÃO DE ROTA E NOVA ESTÉTICA)
+                // 1
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'DIÁRIO',
-                  icon: Icons.menu_book, 
+                  icon: Icons.menu_book, // Ícone novo
                   color: Colors.blue[300]!, 
                   onTap: () {
                     Navigator.push(
@@ -337,7 +309,7 @@ class InicioAlunoState extends State<InicioAluno> {
                   },
                 ),
                 
-                // 2. ESTADO EMOCIONAL (COM NOVA ESTÉTICA)
+                // 2
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'ESTADO EMOCIONAL',
@@ -355,45 +327,10 @@ class InicioAlunoState extends State<InicioAluno> {
             ),
             const SizedBox(height: 15),
             
-            // Botão Pulseira (MANTIDO ESTILO ORIGINAL)
-            SizedBox(
-              width: buttonWidth * 2.5,
-              height: buttonWidth,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PulseiraPage())
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/emoji.png', // Asset original
-                      width: 110,
-                      height: 110,
-                    ),
-                    const Text(
-                      "PULSEIRA",
-                      style: TextStyle(fontSize: 18, color: Colors.white, wordSpacing: -2),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            
           ],
         ),
       ),
-      // O IconButton que estava no Positioned foi movido para o AppBar como leading: IconButton(icon: Icon(Icons.menu)...)
     );
   }
 }
