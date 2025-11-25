@@ -1,14 +1,14 @@
-import 'package:educare/Services/supabase.dart'; 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 // Importa as telas
-import '../Questionario.dart'; 
-import 'Rotina.dart'; 
-import 'Contatos.dart'; 
-import 'ResumoDiario.dart'; 
-import 'Notificacoes.dart'; 
-import '/Telas/login.dart'; 
-import 'EditarDadosResponsavel.dart'; 
+import '../Questionario.dart';
+import 'Rotina.dart';
+import 'Contatos.dart';
+import 'ResumoDiario.dart';
+import 'Notificacoes.dart';
+import '/Telas/login.dart';
+import 'EditarDadosResponsavel.dart';
 
 class InicioResponsavel extends StatefulWidget {
   const InicioResponsavel({super.key});
@@ -18,116 +18,96 @@ class InicioResponsavel extends StatefulWidget {
 }
 
 class InicioResponsavelState extends State<InicioResponsavel> {
-
-  
-  void _mostrarDialogoSair() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmação'),
-          content: const Text('Tem certeza de que deseja sair da sua conta?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () => Navigator.of(context).pop(), 
-            ),
-            TextButton(
-              child: const Text('Sair', style: TextStyle(color: Colors.red)),
-              onPressed: () async {
-                Navigator.of(context).pop(); 
-                await Supabase.instance.client.auth.signOut();
-                if (mounted) { 
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const Login()),
-                      (Route<dynamic> route) => false,
-                    );
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   final supabase = Supabase.instance.client;
-  String _nomeResponsavel = 'Responsável'; 
-  Map<String, dynamic>? _alunoPendente; // Guarda o ID e NOME do aluno que precisa preencher
+
+  String _nomeResponsavel = 'Responsável';
+  Map<String, dynamic>? _alunoPendente;
 
   @override
   void initState() {
     super.initState();
-    _fetchResponsavelName(); 
-    _checkQuestionarioStatus(); 
+    _fetchResponsavelName();
+    _checkQuestionarioStatus();
   }
 
-  // ⬅️ LÓGICA DE CHECAGEM CORRIGIDA: Usa a tabela questionario_resp como FLAG
-  Future<void> _checkQuestionarioStatus() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
-    
-    try {
-      // 1. Pega IDs dos alunos
-      final alunosResp = await supabase
-          .from('responsavel_aluno')
-          .select('id_aluno')
-          .eq('id_responsavel', userId);
-      
-      final idsAlunos = alunosResp.map((e) => e['id_aluno']).toList();
-      if (idsAlunos.isEmpty) return;
-      
-      // 2. Busca o primeiro aluno que NÃO preencheu o questionario_resp
-      // Faz um LEFT JOIN e verifica se a FK na tabela de questionário é NULA
-      final alunoPendenteResp = await supabase
-          .from('aluno')
-          // Seleciona o ID do aluno, o NOME do usuário e o ID_aluno da tabela questionario_resp (se existir)
-          .select('id, usuario:id!inner(nome), questionario_resp(id_aluno)') 
-          .inFilter('id', idsAlunos)
-          .filter('questionario_resp.id_aluno', 'is', null) // Filtra onde a FK na tabela 'questionario_resp' é NULA
-          .limit(1) 
-          .maybeSingle(); 
-          
-      if (alunoPendenteResp != null && mounted) {
-        setState(() {
-          // Os dados do aluno pendente virão do primeiro nível da query (aluno)
-          _alunoPendente = {
-            'id': alunoPendenteResp['id'],
-            'nome': alunoPendenteResp['usuario']['nome'] ?? 'Seu Aluno',
-          };
-        });
-      }
-      
-    } catch (e) {
-      // ignore: avoid_print
-      print('Erro ao checar status do questionário: $e');
-    }
+  void _mostrarDialogoSair() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmação'),
+        content: const Text('Tem certeza de que deseja sair da sua conta?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await supabase.auth.signOut();
+              if (mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const Login()),
+                    (route) => false);
+              }
+            },
+            child: const Text('Sair', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
-
-  // Função para buscar o nome do responsável logado no Supabase (Mantida a correção para 'usuario')
-  void _fetchResponsavelName() async {
+  Future<void> _fetchResponsavelName() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
 
     try {
       final response = await supabase
-          .from('usuario') 
+          .from('usuario')
           .select('nome')
           .eq('id', userId)
           .single();
-
       if (response.isNotEmpty && mounted) {
         setState(() {
           _nomeResponsavel = response['nome'] ?? 'Responsável';
         });
       }
     } catch (e) {
-      // ignore: avoid_print
       print('Erro ao buscar nome do responsável: $e');
-      setState(() {
-        _nomeResponsavel = 'Responsável';
-      });
+      setState(() => _nomeResponsavel = 'Responsável');
+    }
+  }
+
+  Future<void> _checkQuestionarioStatus() async {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      final alunosResp = await supabase
+          .from('responsavel_aluno')
+          .select('id_aluno')
+          .eq('id_responsavel', userId);
+      final idsAlunos = alunosResp.map((e) => e['id_aluno']).toList();
+      if (idsAlunos.isEmpty) return;
+
+      final alunoPendenteResp = await supabase
+          .from('aluno')
+          .select('id, usuario:id!inner(nome), questionario_resp(id_aluno)')
+          .inFilter('id', idsAlunos)
+          .filter('questionario_resp.id_aluno', 'is', null)
+          .limit(1)
+          .maybeSingle();
+
+      if (alunoPendenteResp != null && mounted) {
+        setState(() {
+          _alunoPendente = {
+            'id': alunoPendenteResp['id'],
+            'nome': alunoPendenteResp['usuario']['nome'] ?? 'Seu Aluno',
+          };
+        });
+      }
+    } catch (e) {
+      print('Erro ao checar status do questionário: $e');
     }
   }
 
@@ -137,192 +117,152 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         .from('responsavel_aluno')
         .select('id_aluno')
         .eq('id_responsavel', userId);
-
     final List<dynamic> alunos = responseResponsavelAlunos;
-    if (alunos.isEmpty) {
-      // ignore: avoid_print
-      print('Nenhum aluno vinculado ao responsável');
-      return;
-    }
+    if (alunos.isEmpty) return;
 
-    final List<String> alunoIds =
-        alunos.map((e) => e['id_aluno'].toString()).toList();
-
-    final hoje = DateTime.now();
-    final hojeFormatado = DateTime(hoje.year, hoje.month, hoje.day).toIso8601String();
-
-    final responseDiarios = await supabase
-        .from('diario')
-        .select()
-        .inFilter('id_aluno', alunoIds)
-        .gte('criado_em', hojeFormatado) 
-        .lt('criado_em', hoje.add(const Duration(days: 1)).toIso8601String()); 
-
-    final diarios = responseDiarios;
-    // ignore: avoid_print
-    print(diarios);
     if (mounted) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ResumoDiario(diarios: diarios)),
+        MaterialPageRoute(builder: (_) => const ResumoDiario()),
       );
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final buttonWidth = (screenWidth - 45) / 2;
 
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
-      appBar: AppBar( 
-        title: const Align(
-            alignment: Alignment.centerLeft, 
-            child: Text(
-              'Início', 
-              style: TextStyle(color: Colors.white)
-            )
+      appBar: AppBar(
+        title: const Padding(
+          padding: EdgeInsets.only(left: 0),
+          child: Text('Início', style: TextStyle(color: Colors.white)),
         ),
         backgroundColor: Colors.lightBlue[300],
-        iconTheme: const IconThemeData(color: Colors.white), 
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
       ),
-      
-      drawer: Drawer(
-        child: ListView(
-            padding: EdgeInsets.zero, 
-            children: [
-              const DrawerHeader(
-                margin: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                ),
-                padding: EdgeInsets.only(top: 10, left: 15),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Text(
-                      'Menu',
-                      style: TextStyle(color: Colors.white, fontSize: 24),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Editar Dados'),
-                onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EditarDadosResponsavel()),
-                ); 
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.exit_to_app),
-                title: const Text('Sair'),
-                
-                onTap: () {
-                  _mostrarDialogoSair(); 
-                },
-              ),
-            ],
-          ),
-      ),
-      
+      drawer: _buildDrawer(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(15, 15, 15, 20), 
+        padding: const EdgeInsets.fromLTRB(15, 15, 15, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-     
-            _buildWelcomeCard(_nomeResponsavel), 
-            const SizedBox(height: 40),       
-
-     
+            _buildWelcomeCard(_nomeResponsavel),
+            const SizedBox(height: 40),
             Wrap(
-              spacing: 15, 
-              runSpacing: 15, 
+              spacing: 15,
+              runSpacing: 15,
               children: [
-                // RESUMO DIÁRIO
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'Resumo Diário',
-                  icon: Icons.assignment_outlined, 
-                  color: const Color.fromARGB(255, 61, 178, 217), 
+                  icon: Icons.assignment_outlined,
+                  color: const Color(0xFF3DB2D9),
                   onTap: buscarDiariosDiariosDeHoje,
                 ),
-                
-                // ROTINA
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'Rotina',
-                  icon: Icons.schedule_outlined, 
-                  color: const Color.fromARGB(255, 85, 158, 88),
+                  icon: Icons.schedule_outlined,
+                  color: const Color(0xFF559E58),
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Rotina()),
-                    );
+                        context,
+                        MaterialPageRoute(builder: (_) => const Rotina()));
                   },
                 ),
-                
-                //  NOTIFICAÇÕES
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'Notificações',
-                  icon: Icons.notifications_none, 
-                  color: const Color.fromARGB(255, 245, 66, 66),
+                  icon: Icons.notifications_none,
+                  color: const Color(0xFFF54242),
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Notificacoes()),
-                    );
+                        context,
+                        MaterialPageRoute(builder: (_) => const Notificacoes()));
                   },
                 ),
-                
-              // CONTATOS
                 _buildGridButton(
                   width: buttonWidth,
                   title: 'Contatos',
-                  icon: Icons.people_alt_outlined, 
-                  color: const Color.fromARGB(255, 255, 226, 61),
+                  icon: Icons.people_alt_outlined,
+                  color: const Color(0xFFFFE23D),
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Contatos()),
-                    );
+                        context,
+                        MaterialPageRoute(builder: (_) => const Contatos()));
                   },
                 ),
               ],
             ),
-            
           ],
         ),
       ),
     );
   }
 
+  Drawer _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            margin: EdgeInsets.zero,
+            decoration: const BoxDecoration(
+              color: Color(0xFF3DB2D9),
+            ),
+            padding: const EdgeInsets.only(top: 10, left: 15),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: Text(
+                  _nomeResponsavel,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit, color: Color(0xFF3DB2D9)),
+            title: const Text('Editar Dados',
+                style: TextStyle(color: Color(0xFF3DB2D9))),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const EditarDadosResponsavel()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app, color: Colors.red),
+            title: const Text('Sair', style: TextStyle(color: Colors.red)),
+            onTap: _mostrarDialogoSair,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildWelcomeCard(String nome) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3), 
-          ),
+              color: Colors.grey.withOpacity(0.15),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 3)),
         ],
       ),
       child: Column(
@@ -331,25 +271,18 @@ class InicioResponsavelState extends State<InicioResponsavel> {
           Text(
             "Seja Bem-Vindo, $nome!",
             style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF009ADA),
-            ),
+                fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF009ADA)),
           ),
           const SizedBox(height: 5),
           const Text(
             "Tudo pronto para acompanhar o dia do seu filho",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
       ),
     );
   }
 
-  // Botão em Formato de Grade Quadrado (Inalterado)
   Widget _buildGridButton({
     required double width,
     required String title,
@@ -359,35 +292,29 @@ class InicioResponsavelState extends State<InicioResponsavel> {
   }) {
     return SizedBox(
       width: width,
-      height: width, 
+      height: width,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           alignment: Alignment.center,
           backgroundColor: color,
           foregroundColor: Colors.white,
-          elevation: 5,
+          elevation: 6,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: width * 0.4, 
-              color: Colors.white,
-            ),
+            Icon(icon, size: width * 0.4, color: Colors.white),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),

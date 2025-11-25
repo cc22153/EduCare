@@ -17,7 +17,6 @@ class _EditarDadosAlunoState extends State<EditarDadosAluno> {
   final nomeController = TextEditingController();
   final emailController = TextEditingController();
   final telefoneController = TextEditingController();
-  final emailResponsavelController = TextEditingController();
   final turmaIdController = TextEditingController(); // Se for código/ID
 
   bool carregando = true;
@@ -49,7 +48,7 @@ class _EditarDadosAlunoState extends State<EditarDadosAluno> {
           
       final alunoData = await supabase
           .from('aluno')
-          .select('email_responsavel, id_turma')
+          .select('id_turma')
           .eq('id', userId)
           .maybeSingle();
 
@@ -60,7 +59,6 @@ class _EditarDadosAlunoState extends State<EditarDadosAluno> {
           telefoneController.text = contatoData['telefone'] ?? '';
         }
         if (alunoData != null) {
-          emailResponsavelController.text = alunoData['email_responsavel'] ?? '';
           turmaIdController.text = alunoData['id_turma']?.toString() ?? ''; 
         }
       }
@@ -94,7 +92,6 @@ class _EditarDadosAlunoState extends State<EditarDadosAluno> {
       
     
       await supabase.from('aluno').update({
-        'email_responsavel': emailResponsavelController.text,
         'id_turma': turmaIdController.text, 
       }).eq('id', userId); 
       
@@ -171,17 +168,9 @@ class _EditarDadosAlunoState extends State<EditarDadosAluno> {
                     _buildStyledTextField(telefoneController, 'Telefone de Contato do Aluno', keyboardType: TextInputType.phone),
                     const SizedBox(height: 15),
 
-                    const Divider(color: Colors.lightBlue), // Separador visual
-
-                    // Campo Email do Responsável
-                    _buildStyledTextField(emailResponsavelController, 'Email do Responsável'),
-                    const SizedBox(height: 15),
-                    
                     // Campo Código da Turma
                     _buildStyledTextField(turmaIdController, 'Código/ID da Turma'),
                     const SizedBox(height: 25),
-    
-                    const SizedBox(height: 40),
                     
                     // Botão SALVAR ALTERAÇÕES
                     SizedBox(

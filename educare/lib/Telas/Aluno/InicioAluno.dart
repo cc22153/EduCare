@@ -1,3 +1,5 @@
+import 'package:educare/Telas/Aluno/ConfigurarPulseira.dart';
+import 'package:educare/Telas/Aluno/EditarDadosAluno.dart';
 import 'package:educare/Telas/Aluno/RotinaAluno.dart';
 import 'package:educare/Telas/Login.dart';
 import 'package:educare/Telas/Questionario.dart';
@@ -33,7 +35,6 @@ class InicioAlunoState extends State<InicioAluno> {
           .eq('id_aluno', widget.aluno['id'])
           .maybeSingle();
 
-      // Se não existir questionário, redireciona
       if (questionario == null) {
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -45,13 +46,11 @@ class InicioAlunoState extends State<InicioAluno> {
       }
     } catch (e) {
       print('Erro ao verificar questionário: $e');
-      // opcional: mostrar SnackBar ou alerta
     }
   }
 
- 
   void _mostrarDialogoSair() {
-    final parentContext = context; // <- Contexto da tela, que nunca desmonta dentro do diálogo
+    final parentContext = context;
 
     showDialog(
       context: parentContext,
@@ -67,10 +66,8 @@ class InicioAlunoState extends State<InicioAluno> {
             TextButton(
               child: const Text('Sair', style: TextStyle(color: Colors.red)),
               onPressed: () async {
-                Navigator.of(dialogContext).pop(); // fecha somente o diálogo
-
+                Navigator.of(dialogContext).pop();
                 await Supabase.instance.client.auth.signOut();
-
                 if (!mounted) return;
 
                 Navigator.of(parentContext).pushAndRemoveUntil(
@@ -84,167 +81,126 @@ class InicioAlunoState extends State<InicioAluno> {
       },
     );
   }
-  
-  
-  Widget _buildGridButton({
-    required double width,
-    required String title,
+
+  Widget _buildCardButton({
     required IconData icon,
+    required String title,
     required Color color,
     required VoidCallback onTap,
   }) {
-    return SizedBox(
-      width: width,
-      height: width,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          alignment: Alignment.center,
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          elevation: 5,
-          shape: RoundedRectangleBorder(
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 140,
+          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: color,
             borderRadius: BorderRadius.circular(15),
-          ),
-          padding: const EdgeInsets.all(10),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Icon(
-              icon,
-              size: width * 0.45,
-              color: Colors.white,
-            ),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 6,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  // Widget para item do Drawer 
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.lightBlue[800]),
-      title: Text(title, style: TextStyle(color: Colors.lightBlue[800])),
-      onTap: onTap,
-    );
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = (screenWidth - 45) / 2;
-
-    return Scaffold(
-      backgroundColor: Colors.lightBlue[100],
-      
-     
-      appBar: AppBar(
-        title: const Center(
-          child: Padding(
-            padding: EdgeInsets.only(right: 50.0), 
-            child: Text(
-              'INÍCIO', 
-              style: TextStyle(color: Colors.white)
-            ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 50),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.lightBlue[300],
-        
-        leading: Builder(
-          builder: (BuildContext innerContext) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white), 
-              onPressed: () {
-                Scaffold.of(innerContext).openDrawer(); 
-              },
-            );
-          },
-        ),
       ),
-      
-     
-      drawer: Drawer(
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Container(
+        color: Colors.lightBlue[50],
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader( 
-              margin:  EdgeInsets.all(0),
-              decoration:  BoxDecoration(
-                color: Colors.lightBlue,
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [Colors.lightBlue[300]!, Colors.blue[400]!]),
               ),
-              padding:  EdgeInsets.only(top: 10, left: 15),
-              child:  Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 15),
-                  child: Text(
-                    'Menu',
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
+              accountName: Text(widget.usuario['nome'] ?? 'Aluno'),
+              accountEmail: Text(widget.usuario['email'] ?? ''),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: Colors.lightBlue, size: 40),
               ),
             ),
-            
-            _buildDrawerItem(
-              icon: Icons.person,
-              title: 'Editar Dados',
+            ListTile(
+              leading: const Icon(Icons.person, color: Colors.lightBlue),
+              title: const Text('Editar Dados'),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(content: Text('Navegar para Editar Dados do Responsável'))
-                 );
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => EditarDadosAluno(alunoId: widget.aluno['id'])),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.watch, color: Colors.lightBlue),
+              title: const Text('Configurar Pulseira'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ConfigurarPulseira()),
+                );
               },
             ),
             const Divider(),
-            
-            _buildDrawerItem(
-              icon: Icons.exit_to_app,
-              title: 'Sair',
-              onTap: () {
-                _mostrarDialogoSair(); 
-              },
+            ListTile(
+              leading: const Icon(Icons.exit_to_app, color: Colors.red),
+              title: const Text('Sair', style: TextStyle(color: Colors.red)),
+              onTap: _mostrarDialogoSair,
             ),
           ],
         ),
       ),
-     
-      
-      body: SingleChildScrollView(
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.lightBlue[50],
+      appBar: AppBar(
+        title: const Text('Início', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.lightBlue[300],
+      ),
+      drawer: _buildDrawer(),
+      body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            // Container
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.black12.withOpacity(0.05),
                     spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3), 
+                    blurRadius: 6,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -252,114 +208,75 @@ class InicioAlunoState extends State<InicioAluno> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Olá, ${widget.usuario['nome']}!", 
+                    'Olá, ${widget.usuario['nome']}!',
                     style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF009ADA),
-                    ),
+                        fontSize: 24, fontWeight: FontWeight.bold, color: Colors.lightBlue),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    'Bem-vindo de volta!',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
                 ],
               ),
             ),
-            
             const SizedBox(height: 30),
-            
-            SizedBox(
-              width: buttonWidth * 2.5,
-              height: buttonWidth,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RotinaAluno()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  alignment: const AlignmentDirectional(-0.8, 0),
-                  backgroundColor: Colors.blue[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateFormat.EEEE('pt_BR').format(DateTime.now()).toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(255, 221, 63, 52),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          DateTime.now().day.toString(),
-                          style: const TextStyle(fontSize: 32, color: Colors.white),
-                        )
-                      ],
-                    ),
-                    const Text(
-                      "Sem eventos hoje",
-                      style: TextStyle(fontSize: 16, color: Colors.white54),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 35),
-            
-            // Botões Diário e Emoções 
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 1
-                _buildGridButton(
-                  width: buttonWidth,
-                  title: 'DIÁRIO',
-                  icon: Icons.menu_book, // Ícone novo
-                  color: Colors.blue[300]!, 
+                _buildCardButton(
+                  icon: Icons.menu_book,
+                  title: 'Diário',
+                  color: Colors.blue[400]!,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DiarioAluno(idAluno: widget.aluno['id']),
+                        builder: (_) => DiarioAluno(idAluno: widget.aluno['id']),
                       ),
                     );
                   },
                 ),
-                
-                // 2
-                _buildGridButton(
-                  width: buttonWidth,
-                  title: 'ESTADO EMOCIONAL',
-                  icon: Icons.sentiment_very_satisfied, 
-                  color: Colors.blue[300]!, 
+                _buildCardButton(
+                  icon: Icons.sentiment_very_satisfied,
+                  title: 'Estado Emocional',
+                  color: Colors.purple[400]!,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EstadoEmocional(idAluno: widget.aluno['id'])),
+                        builder: (_) => EstadoEmocional(idAluno: widget.aluno['id']),
+                      ),
                     );
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            
-            
+            Row(
+              children: [
+                _buildCardButton(
+                  icon: Icons.schedule,
+                  title: 'Rotina',
+                  color: Colors.orange[400]!,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RotinaAluno()),
+                    );
+                  },
+                ),
+                _buildCardButton(
+                  icon: Icons.watch,
+                  title: 'Configurar Pulseira',
+                  color: Colors.green[400]!,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ConfigurarPulseira()),
+                    );
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
