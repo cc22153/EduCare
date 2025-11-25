@@ -1,4 +1,3 @@
-import 'package:educare/Services/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -118,7 +117,7 @@ class _ResumoDiarioState extends State<ResumoDiario> {
                             _linhaResposta(
                                 'Como se sentiu:', diario['humor_geral']),
                             const SizedBox(height: 10),
-                            _linhaResposta('Como foi:', diario['texto']),
+                            _linhaResposta('Conseguiu fazer o que queria:', diario['fez_o_que_queria']),
                           ],
                         ),
                       ),

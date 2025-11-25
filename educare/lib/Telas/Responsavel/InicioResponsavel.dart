@@ -2,7 +2,7 @@ import 'package:educare/Services/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // Importa as telas
-import 'Questionario.dart'; 
+import '../Questionario.dart'; 
 import 'Rotina.dart'; 
 import 'Contatos.dart'; 
 import 'ResumoDiario.dart'; 
@@ -172,31 +172,6 @@ class InicioResponsavelState extends State<InicioResponsavel> {
 
   @override
   Widget build(BuildContext context) {
-    // ⬅️ REDIRECIONAMENTO CRÍTICO AQUI
-    if (_alunoPendente != null) {
-      // Se houver qualquer aluno sem o questionário, força a ir para lá
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Questionario(
-              idAluno: _alunoPendente!['id'], // Passa o ID
-              nomeAluno: _alunoPendente!['nome'], // Passa o NOME
-            )
-          ), 
-        ).then((_) {
-            // Recarrega o status quando voltar
-            _checkQuestionarioStatus(); 
-        });
-      });
-      return const Scaffold(
-        backgroundColor: Colors.lightBlue,
-        body: Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        )
-      ); 
-    }
-    // ⬅️ FIM DO REDIRECIONAMENTO
 
     final screenWidth = MediaQuery.of(context).size.width;
     final buttonWidth = (screenWidth - 45) / 2;
@@ -219,13 +194,13 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         child: ListView(
             padding: EdgeInsets.zero, 
             children: [
-              DrawerHeader(
-                margin: const EdgeInsets.all(0),
-                decoration: const BoxDecoration(
+              const DrawerHeader(
+                margin: EdgeInsets.all(0),
+                decoration: BoxDecoration(
                   color: Colors.lightBlue,
                 ),
-                padding: const EdgeInsets.only(top: 10, left: 15),
-                child: const Align(
+                padding: EdgeInsets.only(top: 10, left: 15),
+                child: Align(
                   alignment: Alignment.bottomLeft,
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 15),
@@ -251,13 +226,8 @@ class InicioResponsavelState extends State<InicioResponsavel> {
                 leading: const Icon(Icons.exit_to_app),
                 title: const Text('Sair'),
                 
-                onTap: () async {
-                  await Supabase.instance.client.auth.signOut();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Login()),
-                    (Route<dynamic> route) => false,
-                  );
+                onTap: () {
+                  _mostrarDialogoSair(); 
                 },
               ),
             ],
@@ -347,6 +317,7 @@ class InicioResponsavelState extends State<InicioResponsavel> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 5,

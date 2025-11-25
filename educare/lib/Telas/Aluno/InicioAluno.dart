@@ -1,6 +1,6 @@
-import 'package:educare/Telas/Aluno/PulseiraPage.dart';
 import 'package:educare/Telas/Aluno/RotinaAluno.dart';
 import 'package:educare/Telas/Login.dart';
+import 'package:educare/Telas/Questionario.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,34 +17,66 @@ class InicioAluno extends StatefulWidget {
 }
 
 class InicioAlunoState extends State<InicioAluno> {
-  
+  final supabase = Supabase.instance.client;
+
+  @override
+  void initState() {
+    super.initState();
+    _verificarQuestionario();
+  }
+
+  Future<void> _verificarQuestionario() async {
+    try {
+      final questionario = await supabase
+          .from('questionario_resp')
+          .select('id_aluno')
+          .eq('id_aluno', widget.aluno['id'])
+          .maybeSingle();
+
+      // Se não existir questionário, redireciona
+      if (questionario == null) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Questionario(usuario: widget.usuario, aluno: widget.aluno),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Erro ao verificar questionário: $e');
+      // opcional: mostrar SnackBar ou alerta
+    }
+  }
+
  
   void _mostrarDialogoSair() {
+    final parentContext = context; // <- Contexto da tela, que nunca desmonta dentro do diálogo
+
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: parentContext,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Confirmação'),
-          content: const Text('Tem certeza de que deseja sair da sua conta e voltar para o login?'),
+          content: const Text('Tem certeza de que deseja sair da sua conta?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop(); 
-              },
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: const Text('Sair', style: TextStyle(color: Colors.red)),
               onPressed: () async {
-                Navigator.of(context).pop(); 
+                Navigator.of(dialogContext).pop(); // fecha somente o diálogo
+
                 await Supabase.instance.client.auth.signOut();
-                
-                if (mounted) { 
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const Login()),
-                      (Route<dynamic> route) => false,
-                    );
-                }
+
+                if (!mounted) return;
+
+                Navigator.of(parentContext).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Login()),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           ],
@@ -151,13 +183,13 @@ class InicioAlunoState extends State<InicioAluno> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader( 
-              margin: const EdgeInsets.all(0),
-              decoration: const BoxDecoration(
+            const DrawerHeader( 
+              margin:  EdgeInsets.all(0),
+              decoration:  BoxDecoration(
                 color: Colors.lightBlue,
               ),
-              padding: const EdgeInsets.only(top: 10, left: 15),
-              child: const Align(
+              padding:  EdgeInsets.only(top: 10, left: 15),
+              child:  Align(
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 15),

@@ -6,6 +6,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Professor/InicioProfessor.dart';
 import 'package:intl/intl.dart';
+import 'Questionario.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -24,10 +25,9 @@ class CadastroState extends State<Cadastro> {
     type: MaskAutoCompletionType.lazy,
   );
 
-
   // Campos extras para aluno
   String nomeResponsavel = "";
-  String emailResponsavel = ""; // ⬅️ Este campo será usado para a busca!
+  String emailResponsavel = ""; 
   String codigoTurma = "";
   String telefone = "";
   DateTime? dataNascimento;
@@ -123,18 +123,13 @@ class CadastroState extends State<Cadastro> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    // Mantendo a estilização
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
         title: const Center(
-          child: Text(
-            'CADASTRO', 
-            style: TextStyle(color: Colors.white)
-          )
+          child: Text('CADASTRO', style: TextStyle(color: Colors.white))
         ),
         centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
@@ -177,7 +172,6 @@ class CadastroState extends State<Cadastro> {
             ),
             const SizedBox(height: 20),
 
-
             // Dropdown de tipo de usuário
             Row(
               children: [
@@ -207,7 +201,6 @@ class CadastroState extends State<Cadastro> {
               ),
               const SizedBox(height: 15),
 
-              // ⬅️ NOVO CAMPO: EMAIL DO RESPONSÁVEL
               _buildStyledTextField(
                 'Email do Responsável (Obrigatório)', 
                 emailResponsavel,
@@ -216,7 +209,6 @@ class CadastroState extends State<Cadastro> {
               ),
               const SizedBox(height: 15),
 
-              
               _buildStyledTextField(
                 'Código da Turma', 
                 codigoTurma,
@@ -255,12 +247,12 @@ class CadastroState extends State<Cadastro> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () async {
-                  cadastrarUsuario(
+                  await cadastrarUsuario(
                     email: email,
                     senha: senha,
                     nome: nome,
                     tipoUsuario: dropdownValue.toLowerCase(),
-                    email_responsavel: emailResponsavel, // ⬅️ Passando o EMAIL
+                    email_responsavel: emailResponsavel,
                     data_nascimento: dataNascimento,
                     sexo: sexoSelecionado,
                     nivel_tea: nivelTEA,
@@ -268,7 +260,6 @@ class CadastroState extends State<Cadastro> {
                     telefone: telefone,
                     context: context,
                   );
-
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 61, 178, 217),
@@ -281,19 +272,18 @@ class CadastroState extends State<Cadastro> {
                 ),
               ),
             ),
-          ]),
-        ),
+          ])),
       ),
     );
   }
 
-  // ⬅️ FUNÇÃO CORRIGIDA PARA BUSCAR O UUID DO RESPONSÁVEL PELO EMAIL
+  // Função de cadastro corrigida para pegar UUID pelo email do responsável
   Future<void> cadastrarUsuario({
     required String email,
     required String senha,
     required String nome,
     required String tipoUsuario,
-    String? email_responsavel, // ⬅️ Recebe o EMAIL
+    String? email_responsavel,
     DateTime? data_nascimento,
     String? sexo,
     String? nivel_tea,
@@ -303,17 +293,15 @@ class CadastroState extends State<Cadastro> {
   }) async {
     final supabase = Supabase.instance.client;
 
-    // ... (Seu código de showDialog permanece aqui)
-
     try {
       if(tipoUsuario == "responsável"){tipoUsuario = "responsavel";}
       Map<String, dynamic>? aluno;
-      String? idResponsavel; // UUID do responsável
+      String? idResponsavel;
 
-      // 1. Encontra o UUID do Responsável pelo EMAIL, se o tipo for Aluno
+      // Busca UUID do responsável pelo EMAIL
       if (tipoUsuario == 'aluno' && email_responsavel != null && email_responsavel.isNotEmpty) {
         final respData = await supabase
-            .from('contato') // Busca na tabela de contato
+            .from('contato')
             .select('id_usuario')
             .eq('email', email_responsavel)
             .maybeSingle(); 
@@ -324,9 +312,8 @@ class CadastroState extends State<Cadastro> {
           );
           return;
         }
-        idResponsavel = respData['id_usuario']; // Pega o UUID do usuário
+        idResponsavel = respData['id_usuario'];
       }
-
 
       final authResponse = await supabase.auth.signUp(
         email: email,
@@ -336,7 +323,6 @@ class CadastroState extends State<Cadastro> {
       final user = authResponse.user;
       if (user == null) throw Exception('Erro ao criar conta.');
 
-      // 2. Cria o registro do Usuário
       final userAuthenticated = await supabase
           .from('usuario')
           .insert({'id': user.id, 'nome': nome, 'tipo_usuario': tipoUsuario})
@@ -345,8 +331,7 @@ class CadastroState extends State<Cadastro> {
 
       final usuarioId = userAuthenticated['id'];
 
-      // 3. Insere Contato
-      if (telefone != null && telefone.isNotEmpty) {
+      if (telefone!.isNotEmpty) {
         await supabase.from('contato').insert({
           'id_usuario': usuarioId,
           'telefone': telefone,
@@ -355,37 +340,47 @@ class CadastroState extends State<Cadastro> {
         });
       }
 
-      // 4. Insere Aluno e Relacionamento
       if (tipoUsuario == 'aluno') {
-        try {
-          // Inserção na tabela 'aluno'
-          aluno = await supabase.from('aluno').insert({
-            'id': usuarioId,
-            'id_responsavel': idResponsavel, // ⬅️ Agora usa o UUID do Responsável
-            'data_nascimento': data_nascimento?.toIso8601String(),
-            'sexo': sexo,
-            'nivel_tea': nivel_tea,
-            'id_turma': id_turma,
-          }).select().single();
+        aluno = await supabase.from('aluno').insert({
+          'id': usuarioId,
+          'id_responsavel': idResponsavel,
+          'data_nascimento': data_nascimento?.toIso8601String(),
+          'sexo': sexo,
+          'nivel_tea': nivel_tea,
+          'id_turma': id_turma != null && id_turma.isNotEmpty ? id_turma : null,
+        }).select().single();
 
-          // Inserção na tabela `responsavel_aluno`
-          if (idResponsavel != null) {
-            await supabase.from('responsavel_aluno').insert({
-              'id_responsavel': idResponsavel, // ⬅️ Agora usa o UUID
-              'id_aluno': usuarioId,
-            });
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao cadastrar aluno: ${e.toString()}')),
-          );
-          return;
+        if (idResponsavel != null) {
+          await supabase.from('responsavel_aluno').insert({
+            'id_responsavel': idResponsavel,
+            'id_aluno': usuarioId,
+          });
         }
       }
 
-      // 5. Navegação
+      // --- NAVEGAÇÃO ---
       if (tipoUsuario == 'aluno' && aluno != null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => InicioAluno(usuario: userAuthenticated, aluno: aluno!,)));
+        final questionarioExistente = await supabase
+            .from('questionario_resp')
+            .select('id_aluno')
+            .eq('id_aluno', usuarioId)
+            .maybeSingle();
+
+        if (questionarioExistente == null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const Questionario(usuario: {}, aluno: {},),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => InicioAluno(usuario: userAuthenticated, aluno: aluno!),
+            ),
+          );
+        }
       } else if (tipoUsuario == 'professor') {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const InicioProfessor()));
       } else if (tipoUsuario == 'responsavel') {

@@ -19,28 +19,32 @@ class InicioProfessorState extends State<InicioProfessor> {
   
   // Função que mostra o pop-up de sair
   void _mostrarDialogoSair() {
+    final parentContext = context; // <- Contexto da tela, que nunca desmonta dentro do diálogo
+
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: parentContext,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Confirmação'),
           content: const Text('Tem certeza de que deseja sair da sua conta?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
-              onPressed: () => Navigator.of(context).pop(), 
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: const Text('Sair', style: TextStyle(color: Colors.red)),
               onPressed: () async {
-                Navigator.of(context).pop(); 
+                Navigator.of(dialogContext).pop(); // fecha somente o diálogo
+
                 await Supabase.instance.client.auth.signOut();
-                if (mounted) { 
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const Login()),
-                      (Route<dynamic> route) => false,
-                    );
-                }
+
+                if (!mounted) return;
+
+                Navigator.of(parentContext).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Login()),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           ],
@@ -48,6 +52,7 @@ class InicioProfessorState extends State<InicioProfessor> {
       },
     );
   }
+
   
  
   Widget _buildGridButton({

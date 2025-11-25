@@ -33,9 +33,7 @@ class _ContatosState extends State<Contatos> {
       final idsAlunos = alunosResp.map((e) => e['id_aluno']).toList();
 
       if (idsAlunos.isEmpty) {
-        setState(() {
-          carregando = false;
-        });
+        setState(() => carregando = false);
         return;
       }
 
@@ -45,14 +43,11 @@ class _ContatosState extends State<Contatos> {
           .select('id_responsavel')
           .inFilter('id_aluno', idsAlunos);
 
-      // Usar Set para garantir IDs únicos
       final idsResponsaveis =
           outrosResp.map((e) => e['id_responsavel']).toSet().toList();
 
-      // Filtrar o próprio usuário
-      idsResponsaveis.remove(userId); 
-      
-      // 3️⃣ Buscar contatos desses responsáveis
+      idsResponsaveis.remove(userId);
+
       if (idsResponsaveis.isNotEmpty) {
         final contatosResp = await supabase
             .from('contato')
@@ -62,7 +57,7 @@ class _ContatosState extends State<Contatos> {
         contatos.addAll(List<Map<String, dynamic>>.from(contatosResp));
       }
 
-      // 4️⃣ Pegar turmas dos alunos
+      // 3️⃣ Pegar turmas dos alunos
       final turmasResp = await supabase
           .from('aluno')
           .select('id_turma')
@@ -70,15 +65,16 @@ class _ContatosState extends State<Contatos> {
 
       final idsTurmas = turmasResp.map((e) => e['id_turma']).toSet().toList();
 
-      // 5️⃣ Buscar professor da turma e contato
+      // 4️⃣ Buscar professores dessas turmas
       if (idsTurmas.isNotEmpty) {
         final profTurma = await supabase
             .from('professor_turma')
             .select('id_professor')
             .inFilter('id_turma', idsTurmas);
 
-        final idsProfessores = profTurma.map((e) => e['id_professor']).toSet().toList();
-        
+        final idsProfessores =
+            profTurma.map((e) => e['id_professor']).toSet().toList();
+
         if (idsProfessores.isNotEmpty) {
           final contatosProf = await supabase
               .from('contato')
@@ -88,157 +84,185 @@ class _ContatosState extends State<Contatos> {
           contatos.addAll(List<Map<String, dynamic>>.from(contatosProf));
         }
       }
-      
-      // Filtra duplicados se houver (ex: mesmo responsável em diferentes alunos)
+
+      // Remover duplicados por e-mail
       final uniqueContatos = contatos
-          .map((e) => e['email'] as String)
+          .map((e) => e['email'] as String?)
+          .where((e) => e != null && e.isNotEmpty)
           .toSet()
-          .map((email) => contatos.firstWhere((e) => e['email'] == email))
+          .map((email) => contatos.firstWhere((c) => c['email'] == email))
           .toList();
-      
+
       contatos = uniqueContatos;
 
-      setState(() {
-        carregando = false;
-      });
+      setState(() => carregando = false);
     } catch (e) {
-      // ignore: avoid_print
       print('Erro ao carregar contatos: $e');
-      setState(() {
-        carregando = false;
-      });
+      setState(() => carregando = false);
     }
   }
+
+  // ---------------------- CARD DE CONTATO (mesmo layout do ContatosProfessor) ----------------------
+
+  Widget _buildContatoCard({
+    required String nome,
+    required String telefone,
+    required String email,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      margin: const EdgeInsets.only(bottom: 18),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 8,
+            spreadRadius: 1,
+            color: Colors.black.withOpacity(0.08),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Nome e avatar
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.lightBlue[200],
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    nome,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 15),
+            Divider(color: Colors.grey[300]),
+            const SizedBox(height: 10),
+
+            _buildContactRow(
+              icon: Icons.phone_rounded,
+              label: "Telefone",
+              value: telefone,
+            ),
+
+            const SizedBox(height: 8),
+
+            _buildContactRow(
+              icon: Icons.email_rounded,
+              label: "E-mail",
+              value: email,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.lightBlue[100],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: Colors.blue[800], size: 22),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Color(0xFF0077B6),
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  // ---------------------- BUILD ----------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
-        // Refinamento: Título e ícone de voltar em branco
-        title: const Center(
-          child: Text(
-            'CONTATOS', 
-            style: TextStyle(color: Colors.white)
-          )
+        title: const Text(
+          'CONTATOS',
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
-        iconTheme: const IconThemeData(color: Colors.white), 
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: carregando
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
-          : contatos.isEmpty
-              ? const Center(
-                  child: Text(
-                    "Nenhum contato encontrado",
-                    style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                )
-              : ListView.builder(
-                    padding: const EdgeInsets.all(15),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: carregando
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              )
+            : contatos.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Nenhum contato encontrado",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
                     itemCount: contatos.length,
                     itemBuilder: (context, index) {
-                      final contato = contatos[index];
-                      // Alternamos as cores dos cartões para que a lista fique visualmente mais interessante
-                      final bool isEven = index % 2 == 0;
-                      final Color cardColor = isEven 
-                        ? const Color.fromARGB(255, 230, 245, 255) // Azul claro
-                        : Colors.white; // Branco
-                        
+                      final c = contatos[index];
                       return _buildContatoCard(
-                        nome: contato['nome'] ?? 'Nome Indisponível',
-                        telefone: contato['telefone'] ?? 'Telefone Indisponível',
-                        email: contato['email'] ?? 'E-mail Indisponível',
-                        cardColor: cardColor,
+                        nome: c['nome'] ?? "Nome não informado",
+                        telefone: c['telefone'] ?? "Telefone não informado",
+                        email: c['email'] ?? "E-mail não informado",
                       );
                     },
                   ),
-    );
-  }
-  
-  // Widget customizado para o cartão de contato (Novo Design)
-  Widget _buildContatoCard({
-    required String nome,
-    required String telefone,
-    required String email,
-    required Color cardColor,
-  }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 15),
-      color: cardColor,
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Nome (Destaque Principal)
-            Text(
-              nome,
-              style: TextStyle(
-                fontSize: 20, 
-                fontWeight: FontWeight.bold,
-                color: Colors.lightBlue[700], // Cor de destaque
-              ),
-            ),
-            const Divider(height: 15),
-            
-            // Telefone (Com Ícone e Ação Simulada)
-            _buildContactRow(
-              icon: Icons.phone_outlined,
-              value: telefone,
-              // O `onTap` aqui seria o local para implementar a chamada real
-              onTap: () { /* Implementar link para chamada, ex: launchUrl(Uri.parse('tel:$telefone')); */ },
-            ),
-            
-            // Email (Com Ícone e Ação Simulada)
-            _buildContactRow(
-              icon: Icons.email_outlined,
-              value: email,
-              // O `onTap` aqui seria o local para implementar o envio de e-mail
-              onTap: () { /* Implementar link para e-mail, ex: launchUrl(Uri.parse('mailto:$email')); */ },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget para cada linha de contato (Telefone/Email)
-  Widget _buildContactRow({
-    required IconData icon,
-    required String value,
-    VoidCallback? onTap,
-  }) {
-    // Usamos InkWell ou GestureDetector para dar um feedback visual no toque
-    return InkWell(
-      onTap: onTap, 
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          children: [
-            Icon(
-              icon, 
-              color: Colors.grey[600], 
-              size: 20
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color.fromARGB(255, 61, 178, 217), // Cor azul para simular link
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

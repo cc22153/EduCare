@@ -67,7 +67,6 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
   }
 
   Future<void> enviarEstadoEmocional() async {
-    // Validação dos campos: Motivo e Necessidade não são obrigatórios
     if (emocaoSelecionada == null || dorFisica == null || querFicarSozinho == null || precisaAjuda == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Preencha todas as perguntas de emoção e Sim/Não!")),
@@ -76,15 +75,34 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
     }
 
     try {
+      // Inserir estado emocional
       await supabase.from('estado_emocional').insert({
         'id_aluno': widget.idAluno,
         'sentimento': emocaoSelecionada!.toLowerCase(),
         'motivo': motivoSelecionado,
-        
-     
         'dor_fisica': _yesNoMap[dorFisica!],
         'quer_ficar_sozinho': _yesNoMap[querFicarSozinho!],
         'precisa_ajuda': _yesNoMap[precisaAjuda!],
+      });
+
+      // Criar notificação para professores ou responsáveis
+      final alunoResp = await supabase
+          .from('usuario')
+          .select('nome')
+          .eq('id', widget.idAluno)
+          .maybeSingle();
+
+      final nomeAluno = alunoResp?['nome'] ?? 'Aluno';
+
+      final mensagem = 'Humor: ${emocaoSelecionada!}, Dor física: $dorFisica, '
+          'Quer ficar sozinho: $querFicarSozinho, Precisa de ajuda: $precisaAjuda';
+
+      await supabase.from('notificacoes').insert({
+        'id_aluno': widget.idAluno,
+        'titulo': 'Esta se sentindo $emocaoSelecionada',
+        'tipo': 'estado',
+        'visualizada': false,
+        'enviado_em': DateTime.now().toIso8601String(),
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -98,6 +116,7 @@ class _EstadoEmocionalState extends State<EstadoEmocional> {
       );
     }
   }
+
 
   Widget emocaoButton(String emoji, String titulo) {
 
