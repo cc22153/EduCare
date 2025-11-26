@@ -210,15 +210,15 @@ class _QuestionarioState extends State<Questionario> {
               _buildDropdown(nivelSuporteOpcoes, nivelSuporte, (val) => setState(() => nivelSuporte = val)),
             ]),
             _cardSecao([
-              _tituloSecao('A criança se comunica verbalmente?'),
+              _tituloSecao('Se comunica verbalmente?'),
               _buildDropdown(comunicacaoOpcoes, comunicacaoVerbalResp, (val) => setState(() => comunicacaoVerbalResp = val)),
             ]),
             _cardSecao([
-              _tituloSecao('Como a criança lida com interações sociais?\n(1 = Evita / 5 = Busca)'),
+              _tituloSecao('Lida com interações sociais?\n(1 = Evita / 5 = Busca)'),
               _buildDropdown(['1','2','3','4','5'], interacaoSocialEscala?.toString(), (val) => setState(() => interacaoSocialEscala = int.tryParse(val!))),
             ]),
             _cardSecao([
-              _tituloSecao('A criança segue uma rotina diária estruturada?'),
+              _tituloSecao('Segue uma rotina diária estruturada?'),
               _buildDropdown(rotinaOpcoes, rotinaEstruturada, (val) => setState(() => rotinaEstruturada = val)),
             ]),
             _cardSecao([
