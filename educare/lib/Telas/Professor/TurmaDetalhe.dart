@@ -410,7 +410,7 @@ class _TurmaDetalheState extends State<TurmaDetalhe> with SingleTickerProviderSt
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.blue[400],
+        backgroundColor: Colors.lightBlue[300],
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(widget.turmaNome, style: const TextStyle(color: Colors.white)),
         actions: [

@@ -199,7 +199,7 @@ class _AdminTurmasState extends State<AdminTurmas> {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.blue[400],
+        backgroundColor: Colors.lightBlue[300],
         elevation: 2,
       ),
       body: carregando

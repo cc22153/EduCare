@@ -83,7 +83,7 @@ class _AlunosState extends State<Alunos> with SingleTickerProviderStateMixin {
           'Alunos',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xff4A90E2),
+        backgroundColor: Colors.lightBlue[300],
         elevation: 4,
         iconTheme: const IconThemeData(color: Colors.white),
       ),

@@ -117,7 +117,7 @@ class _DetalhesAlunoState extends State<DetalhesAluno>
     return Scaffold(
       backgroundColor: const Color(0xffEAF4FF),
       appBar: AppBar(
-        backgroundColor: const Color(0xff4A90E2),
+         backgroundColor: Colors.lightBlue[300],
         elevation: 4,
         centerTitle: true,
         title: Text(

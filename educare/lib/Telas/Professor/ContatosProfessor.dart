@@ -214,6 +214,7 @@ class _ContatosProfessorState extends State<ContatosProfessor> {
           'CONTATOS DOS RESPONSÁVEIS',
           style: TextStyle(color: Colors.white),
         ),
+        foregroundColor: Colors.white,
         centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
       ),
