@@ -62,9 +62,10 @@ class _ConfigurarPulseiraState extends State<ConfigurarPulseira> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configurar Pulseira'),
+        title: const Text('Configurar Pulseira',  style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.lightBlue[300],
         centerTitle: true,
+        foregroundColor: Colors.white,
       ),
       backgroundColor: Colors.lightBlue[50],
       body: Center(

@@ -44,8 +44,9 @@ class _RotinaAlunoState extends State<RotinaAluno> {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
-        title: const Text('Rotina do Aluno'),
+        title: const Text('Rotina do Aluno',  style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.lightBlue[300],
+        foregroundColor: Colors.white,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: carregarRotina(),
@@ -61,7 +62,7 @@ class _RotinaAlunoState extends State<RotinaAluno> {
           final rotina = snapshot.data ?? [];
 
           if (rotina.isEmpty) {
-            return const Center(child: Text('Nenhuma rotina cadastrada.'));
+            return const Center(child: Text('Nenhuma rotina cadastrada.',  style: TextStyle(color: Colors.white)), );
           }
 
           return ListView.builder(

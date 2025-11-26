@@ -183,6 +183,7 @@ class InicioAlunoState extends State<InicioAluno> {
         title: const Text('Início', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.lightBlue[300],
+        foregroundColor: Colors.white,
       ),
       drawer: _buildDrawer(),
       body: Padding(
